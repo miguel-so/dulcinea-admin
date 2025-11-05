@@ -955,6 +955,7 @@ blockquote {
     width: 300% !important;
     left: -100% !important;
   }
+
 }.engine {
 	position: absolute;
 	text-indent: -2400px;
@@ -962,4 +963,24 @@ blockquote {
 	padding: 0;
 	top: 0;
 	left: -2400px;
+}
+
+/* Custom layout adjustments */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body > section:not(.powerm5) {
+  flex-shrink: 0;
+}
+
+body > section.powerm5.footer2 {
+  margin-top: auto;
 }

@@ -72,9 +72,12 @@
                     <h2 class="mbr-section-title mbr-fonts-style display-2">
                         <strong>Send Your Message</strong>
                     </h2>
+                    <p class="mbr-text mbr-fonts-style display-7" data-artwork-context hidden>
+                        
+                    </p>
                 </div>
-                <div class="mbr-form" data-form-type="formoid">
-                    <form action="https://mobirise.eu/" method="POST" class="mbr-form form-with-styler" data-form-title="Form Name"><input type="hidden" name="email" data-form-email="true" value="NLEJMPKVrjxCV2Qp3NShziUpg4FOG7sZOJXA+h7snZI8GX4tNcwbaxYJp61OxAkgLxpiH0ITJkP2MtpVT5dlmDkbfOVCrgeRzK698AIUP+DkGVsofTwCnYWq6MagI2Wc.fqpcaxEPKUS1+F1n1j3VkORZ2S/fx7wP9k/lDxuvgsZEwTlXbzJ2bkbNYiKWhE2Pd1EBZNyYd/RldeNTRMxelwmQC/BrMGNkQ16+M+omeM6YNNU9zjvmkTcLfQCnmovV">
+                <div class="mbr-form">
+                    <form method="POST" class="mbr-form form-with-styler" data-contact-form novalidate>
                         <div class="row">
                             <div hidden="hidden" data-form-alert="" class="alert alert-success col-12">Thanks for
                                 filling out the form!</div>
@@ -84,18 +87,18 @@
                         </div>
                         <div class="dragArea row">
                             <div class="col-lg-4 col-md-12 col-sm-12 form-group mb-3 mb-3" data-for="name">
-                                <input type="text" name="name" placeholder="Name" data-form-field="Name" class="form-control display-7" value="" id="name-form1-2e">
+                                <input type="text" name="name" placeholder="Name" data-form-field="Name" class="form-control display-7" value="" id="name-form1-2e" required>
                             </div>
                             <div class="col-lg-4 col-md-12 col-sm-12 form-group mb-3 mb-3" data-for="email">
-                                <input type="email" name="email" placeholder="Email" data-form-field="Email" class="form-control display-7" value="" id="email-form1-2e">
+                                <input type="email" name="email" placeholder="Email" data-form-field="Email" class="form-control display-7" value="" id="email-form1-2e" required>
                             </div>
                             <div class="col-lg-4 col-md-12 col-sm-12 form-group mb-3" data-for="phone">
                                 <input type="tel" name="phone" placeholder="Phone" data-form-field="phone" class="form-control display-7" value="" id="phone-form1-2e">
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 form-group mb-3" data-for="textarea">
-                                <textarea name="textarea" placeholder="Your Message" data-form-field="textarea" class="form-control display-7" id="textarea-form1-2e"></textarea>
+                                <textarea name="message" placeholder="Your Message" data-form-field="textarea" class="form-control display-7" id="textarea-form1-2e" required></textarea>
                             </div>
-                            <div class="col-auto mbr-section-btn"><button type="submit" class="btn btn-primary display-4">SEND NOW</button></div>
+                            <div class="col-auto mbr-section-btn"><button type="submit" class="btn btn-primary display-4" data-contact-submit>SEND NOW</button></div>
                         </div>
                     </form>
                 </div>
@@ -136,12 +139,13 @@
 </section>
 
 
-<script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/app-config.js"></script>
+  <script src="assets/js/contact.js"></script>
+  <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/smoothscroll/smooth-scroll.js"></script>
   <script src="assets/ytplayer/index.js"></script>
   <script src="assets/dropdown/js/navbar-dropdown.js"></script>
   <script src="assets/theme/js/script.js"></script>
-  <script src="assets/formoid/formoid.min.js"></script>
   
   
   
