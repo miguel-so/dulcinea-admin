@@ -24,7 +24,7 @@ import ContactForm from "../pages/Contact";
 
 const AppRoutes = () => {
   return (
-    <Router>
+    <Router basename="/admin">
       <Routes>
         <Route path={Path.LOGIN} element={<Login />} />
         <Route path={Path.REGISTER} element={<Register />} />

@@ -73,6 +73,38 @@
         transform: scale(2); /* zoom level, adjust as needed */
         transform-origin: center center;
       }
+      .carousel-thumbnails img.active-thumb {
+        border: 2px solid #28a745;
+      }
+      .carousel-wrapper {
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .carousel-thumbnails {
+        display: flex;
+        flex-direction: column;
+        margin-right: 1rem;
+      }
+
+      .carousel-thumbnails img {
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        border: 2px solid transparent;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+      }
+
+      .carousel-thumbnails img.active-thumb {
+        border-color: #28a745;
+      }
+
+      .carousel-inner img {
+        width: 100%;
+        height: 500px; /* fixed height */
+        object-fit: contain; /* prevent flickering */
+      }
     </style>
   </head>
   <body>
@@ -159,15 +191,30 @@
           <div class="card col-12 col-md-12 col-lg-11">
             <div class="card-wrapper">
               <div class="card-box align-center">
-                <h1 class="card-title mbr-fonts-style mb-4 display-5" data-artwork-title>
+                <h1
+                  class="card-title mbr-fonts-style mb-4 display-5"
+                  data-artwork-title
+                >
                   <strong>Loading artwork...</strong>
                 </h1>
-                <p class="mbr-text mbr-fonts-style mb-2 display-4" data-artwork-description>
+                <p
+                  class="mbr-text mbr-fonts-style mb-2 display-4"
+                  data-artwork-description
+                >
                   Please wait while we load the artwork description.
                 </p>
-                <p class="mbr-fonts-style display-7 mt-3" data-artwork-feedback role="status" hidden></p>
+                <p
+                  class="mbr-fonts-style display-7 mt-3"
+                  data-artwork-feedback
+                  role="status"
+                  hidden
+                ></p>
                 <div class="mbr-section-btn mt-4">
-                  <a class="btn btn-success display-7" href="contact-us.html" data-contact-artist aria-disabled="true"
+                  <a
+                    class="btn btn-success display-7"
+                    href="contact-us.html"
+                    data-contact-artist
+                    aria-disabled="true"
                     ><span
                       class="mdi-communication-phone mbr-iconfont mbr-iconfont-btn"
                     ></span
@@ -201,15 +248,20 @@
               data-artwork-carousel
               role="listbox"
               data-pause="true"
-              data-keyboard="false"
-              data-ride="carousel"
-              data-bs-ride="false"
-              data-interval="5000"
-              data-bs-interval="5000"
+              data-bs-ride="carousel"
+              data-bs-interval="3000"
             >
-              <ol class="carousel-indicators" data-carousel-indicators></ol>
+              <ol
+                class="carousel-indicators"
+                data-carousel-indicators
+                style="display: none"
+              ></ol>
               <div class="carousel-inner" data-carousel-inner></div>
             </div>
+            <div
+              class="carousel-thumbnails mt-3 text-center"
+              data-carousel-thumbnails
+            ></div>
           </div>
         </div>
       </div>
