@@ -23,5 +23,5 @@ export const uploadArtworkFiles = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max per file
 }).fields([
   { name: 'thumbnail', maxCount: 1 },
-  { name: 'images', maxCount: 10 },
+  { name: 'images', maxCount: 4 },
 ]);

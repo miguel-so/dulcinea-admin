@@ -40,7 +40,10 @@ interface EditArtworkModalProps {
     location: string,
     notes: string,
     thumbnail: File | null,
-    images: File[]
+    images: File[],
+    existingThumbnail: string | null,
+    existingImages: string[],
+    removeExistingThumbnail: boolean
   ) => void;
 }
 
@@ -69,6 +72,7 @@ const EditArtworkModal = ({
     null
   );
   const [thumbnail, setThumbnail] = useState<File | null>(null); // new thumbnail file
+  const [removeExistingThumbnail, setRemoveExistingThumbnail] = useState<boolean>(false);
 
   const { sendRequest: getCategories } = useApi<GetCategoriesResopnse>();
   const showToast = useToastNotification();
@@ -90,11 +94,25 @@ const EditArtworkModal = ({
     setPrice(selectedArtwork?.price || "");
     setLocation(selectedArtwork?.location || "");
     setNotes(selectedArtwork?.notes || "");
-    setExistingImages(selectedArtwork?.images || []);
+    setExistingImages([...(selectedArtwork?.images || [])]);
     setExistingThumbnail(selectedArtwork?.thumbnail || null);
     setImages([]);
     setThumbnail(null);
+    setRemoveExistingThumbnail(false);
   }, [selectedArtwork, isOpen]);
+  const handleThumbnailSelect = (file: File | null) => {
+    setThumbnail(file);
+
+    if (file) {
+      setRemoveExistingThumbnail(false);
+    }
+  };
+
+  const handleDefaultThumbnailRemove = () => {
+    setExistingThumbnail(null);
+    setRemoveExistingThumbnail(true);
+  };
+
 
   const fetchCategories = () => {
     getCategories({
@@ -142,7 +160,10 @@ const EditArtworkModal = ({
           location,
           notes,
           thumbnail,
-          images
+          images,
+          existingThumbnail,
+          existingImages,
+          removeExistingThumbnail
         )
       }
       title={selectedArtwork ? "Edit Artwork" : "Create Artwork"}
@@ -258,8 +279,9 @@ const EditArtworkModal = ({
             <FormControl>
               <FormLabel color="gray.600">Image</FormLabel>
               <DulcineaImageDragDrop
-                onFileSelect={setThumbnail}
-                defaultImageUrl={selectedArtwork?.thumbnail}
+                onFileSelect={handleThumbnailSelect}
+                defaultImageUrl={existingThumbnail || undefined}
+                onDefaultRemove={handleDefaultThumbnailRemove}
               />
             </FormControl>
 
@@ -268,7 +290,8 @@ const EditArtworkModal = ({
               <DulcineaImageGalleryDragDrop
                 images={images}
                 onChange={setImages}
-                defaultImageUrls={selectedArtwork?.images || []}
+                defaultImageUrls={existingImages}
+                onDefaultImagesChange={setExistingImages}
                 maxFiles={4}
               />
             </FormControl>

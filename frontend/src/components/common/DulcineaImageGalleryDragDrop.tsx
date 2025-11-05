@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Box, HStack, Icon, Image, CloseButton, SimpleGrid, Text } from '@chakra-ui/react';
 import { useDropzone } from 'react-dropzone';
 import { MdCloudUpload } from 'react-icons/md';
@@ -7,6 +7,7 @@ interface DulcineaImageGalleryDragDropProps {
   images: File[];
   onChange: (files: File[]) => void;
   defaultImageUrls?: string[];
+  onDefaultImagesChange?: (urls: string[]) => void;
   maxFiles?: number;
 }
 
@@ -14,28 +15,75 @@ const DulcineaImageGalleryDragDrop: React.FC<DulcineaImageGalleryDragDropProps> 
   images,
   onChange,
   defaultImageUrls = [],
+  onDefaultImagesChange,
   maxFiles = 4,
 }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/*': [] },
     onDrop: (acceptedFiles) => {
-      const newFiles = [...images, ...acceptedFiles].slice(0, maxFiles);
+      const existingCount = defaultImageUrls.length;
+      const availableSlots = maxFiles - (existingCount + images.length);
+
+      if (availableSlots <= 0) {
+        return;
+      }
+
+      const filesToAdd = acceptedFiles.slice(0, availableSlots);
+      if (filesToAdd.length === 0) {
+        return;
+      }
+
+      const newFiles = [...images, ...filesToAdd];
       onChange(newFiles);
     },
     multiple: true,
   });
 
-  const removeImage = (index: number) => {
-    const newFiles = [...images];
-    newFiles.splice(index, 1);
-    onChange(newFiles);
-  };
+  const existingPreviews = useMemo(
+    () =>
+      defaultImageUrls.map((filename, index) => ({
+        key: `existing-${index}-${filename}`,
+        url: `${process.env.REACT_APP_API_URL}/artworks/${filename}`,
+        type: 'existing' as const,
+        filename,
+        index,
+      })),
+    [defaultImageUrls]
+  );
 
-  // Create preview URLs for default images + uploaded files
-  const previews = [
-    ...defaultImageUrls.map((url) => ({ url: `${process.env.REACT_APP_API_URL}/artworks/${url}`, isFile: false })),
-    ...images.map((file) => ({ url: URL.createObjectURL(file), isFile: true })),
-  ];
+  const filePreviews = useMemo(
+    () =>
+      images.map((file, index) => ({
+        key: `uploaded-${index}-${file.name}`,
+        url: URL.createObjectURL(file),
+        type: 'new' as const,
+        index,
+      })),
+    [images]
+  );
+
+  useEffect(() => {
+    return () => {
+      filePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [filePreviews]);
+
+  const previews = [...existingPreviews, ...filePreviews];
+
+  const removeImage = (preview: (typeof previews)[number]) => {
+    if (preview.type === 'existing') {
+      if (!onDefaultImagesChange) {
+        return;
+      }
+
+      const updatedDefaults = defaultImageUrls.filter((_, idx) => idx !== preview.index);
+      onDefaultImagesChange(updatedDefaults);
+      return;
+    }
+
+    const updatedFiles = images.filter((_, idx) => idx !== preview.index);
+    onChange(updatedFiles);
+  };
 
   return (
     <Box>
@@ -63,8 +111,8 @@ const DulcineaImageGalleryDragDrop: React.FC<DulcineaImageGalleryDragDropProps> 
 
       {previews.length > 0 && (
         <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
-          {previews.map((preview, idx) => (
-            <Box key={idx} position="relative" borderRadius="md" overflow="hidden">
+          {previews.map((preview) => (
+            <Box key={preview.key} position="relative" borderRadius="md" overflow="hidden">
               <Image
                 src={preview.url}
                 alt="Artwork"
@@ -79,7 +127,8 @@ const DulcineaImageGalleryDragDrop: React.FC<DulcineaImageGalleryDragDropProps> 
                 top="2"
                 right="2"
                 size="sm"
-                onClick={() => removeImage(idx - defaultImageUrls.length)}
+                onClick={() => removeImage(preview)}
+                isDisabled={preview.type === 'existing' && !onDefaultImagesChange}
                 zIndex={10}
                 colorScheme="red"
               />

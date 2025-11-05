@@ -120,7 +120,10 @@ const Artworks = () => {
     location: string,
     notes: string,
     thumbnail: File | null,
-    images: File[]
+    images: File[],
+    existingThumbnail: string | null,
+    existingImages: string[],
+    removeExistingThumbnail: boolean
   ) => {
     const formData = new FormData();
     formData.append('title', title);
@@ -141,7 +144,15 @@ const Artworks = () => {
         formData.append('images', file);
       });
     }
+
     if (selectedArtwork) {
+      formData.append('existingImages', JSON.stringify(existingImages));
+      formData.append('removeExistingThumbnail', removeExistingThumbnail ? 'true' : 'false');
+
+      if (existingThumbnail) {
+        formData.append('existingThumbnail', existingThumbnail);
+      }
+
       formData.append('artworkId', selectedArtwork?.id || '');
       editArtwork({
         callback: (_data, error: string | null) => {

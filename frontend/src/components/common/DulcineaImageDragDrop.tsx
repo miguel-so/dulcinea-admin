@@ -6,21 +6,23 @@ import { MdCloudUpload } from 'react-icons/md';
 interface DulcineaImageDragDropProps {
   onFileSelect: (file: File | null) => void;
   defaultImageUrl?: string;
+  onDefaultRemove?: () => void;
 }
 
 const DulcineaImageDragDrop: React.FC<DulcineaImageDragDropProps> = ({
   onFileSelect,
   defaultImageUrl,
+  onDefaultRemove,
 }) => {
+  const buildDefaultPreview = (value?: string | null) =>
+    value ? `${process.env.REACT_APP_API_URL}/artworks/${value}` : null;
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    defaultImageUrl || null
+    buildDefaultPreview(defaultImageUrl)
   );
 
   useEffect(() => {
-    if (defaultImageUrl) {
-      setPreviewUrl(`${process.env.REACT_APP_API_URL}/artworks/${defaultImageUrl}`);
-    }
+    setPreviewUrl(buildDefaultPreview(defaultImageUrl));
   }, [defaultImageUrl]);
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -33,9 +35,23 @@ const DulcineaImageDragDrop: React.FC<DulcineaImageDragDropProps> = ({
   };
 
   const removeImage = () => {
+    const defaultPreviewUrl = buildDefaultPreview(defaultImageUrl);
+    const isRemovingDefault = !thumbnail && previewUrl === defaultPreviewUrl;
+
+    if (thumbnail) {
+      setThumbnail(null);
+      setPreviewUrl(defaultPreviewUrl);
+      onFileSelect(null);
+      return;
+    }
+
     setThumbnail(null);
     setPreviewUrl(null);
     onFileSelect(null);
+
+    if (isRemovingDefault) {
+      onDefaultRemove?.();
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

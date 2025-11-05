@@ -199,9 +199,93 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    await Artwork.update(req.body, {
-      where: { id: req.params.id },
+    const uploadDir = path.join(__dirname, "../public/artworks");
+    const deleteFile = (filename: string | null | undefined) => {
+      if (!filename) {
+        return;
+      }
+
+      const filePath = path.join(uploadDir, filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    };
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    const thumbnailFile = files?.thumbnail?.[0];
+    let galleryFiles: Express.Multer.File[] = files?.images ?? [];
+
+    const currentImages = Array.isArray(artwork.images) ? [...artwork.images] : [];
+
+    let requestedExistingImages: string[] | undefined;
+    if (typeof req.body.existingImages === "string") {
+      try {
+        const parsed = JSON.parse(req.body.existingImages);
+        if (Array.isArray(parsed)) {
+          requestedExistingImages = parsed
+            .map((image) => (typeof image === "string" ? image : null))
+            .filter((image): image is string => Boolean(image));
+        }
+      } catch (error) {
+        requestedExistingImages = undefined;
+      }
+    }
+
+    const imagesToKeepSource = requestedExistingImages ?? currentImages;
+    const imagesToKeep = imagesToKeepSource.filter((filename) => currentImages.includes(filename));
+    const uniqueImagesToKeep = Array.from(new Set(imagesToKeep));
+
+    const imagesToDelete = currentImages.filter(
+      (filename) => !uniqueImagesToKeep.includes(filename)
+    );
+    imagesToDelete.forEach((filename) => deleteFile(filename));
+
+    const galleryMaxFiles = 4;
+    if (uniqueImagesToKeep.length + galleryFiles.length > galleryMaxFiles) {
+      const allowedNewFiles = Math.max(galleryMaxFiles - uniqueImagesToKeep.length, 0);
+      const excessFiles = galleryFiles.slice(allowedNewFiles);
+      excessFiles.forEach((file) => deleteFile(file.filename));
+      galleryFiles = galleryFiles.slice(allowedNewFiles);
+    }
+
+    const newGalleryFilenames = galleryFiles.map((img) => img.filename);
+    const finalImages = [...uniqueImagesToKeep, ...newGalleryFilenames];
+
+    const removeExistingThumbnail = req.body.removeExistingThumbnail === "true";
+    let thumbnailFilename = artwork.thumbnail as string | null;
+
+    if (thumbnailFile) {
+      deleteFile(thumbnailFilename);
+      thumbnailFilename = thumbnailFile.filename;
+    } else if (removeExistingThumbnail) {
+      deleteFile(thumbnailFilename);
+      thumbnailFilename = null;
+    }
+
+    const updatableFields = [
+      "title",
+      "categoryId",
+      "size",
+      "media",
+      "printNumber",
+      "inventoryNumber",
+      "status",
+      "price",
+      "location",
+      "notes",
+    ] as const;
+
+    const payload: any = {};
+    updatableFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        payload[field] = req.body[field];
+      }
     });
+
+    payload.thumbnail = thumbnailFilename;
+    payload.images = finalImages;
+
+    await artwork.update(payload);
 
     const updatedArtwork = await Artwork.findByPk(req.params.id);
 
