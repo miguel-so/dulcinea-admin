@@ -1,7 +1,7 @@
 {
   "name": "artwork",
   "version": "0.1.0",
-  "homepage": "/admin",
+  "homepage": "https://admin.dulcinea-art.com/",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",

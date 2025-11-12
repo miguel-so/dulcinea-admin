@@ -34,7 +34,7 @@ const Login = () => {
 
   const { sendRequest: loginRequest } = useApi<LoginResponse>();
 
-  if (isAuthenticated) navigate(Path.USERS);
+  if (isAuthenticated) navigate(Path.ARTWORKS);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -65,7 +65,7 @@ const Login = () => {
             username,
           },
         });
-        navigate(Path.USERS);
+        navigate(Path.ARTWORKS);
       },
       command: ApiCommand.POST,
       url: loginUrl,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Image,
@@ -8,16 +8,21 @@ import {
   ModalBody,
   ModalCloseButton,
   useBreakpointValue,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 
 interface ThumbnailPreviewProps {
   imageUrl: string;
 }
 
+const IMAGE_BASE_URL =
+  process.env.REACT_APP_MODE === "development"
+    ? process.env.REACT_APP_API_URL
+    : `${process.env.REACT_APP_API_URL}/backend/src/public`;
+
 const ThumbnailPreview: React.FC<ThumbnailPreviewProps> = ({ imageUrl }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const modalSize = useBreakpointValue({ base: 'full', md: 'xl' });
+  const modalSize = useBreakpointValue({ base: "full", md: "xl" });
 
   return (
     <>
@@ -29,10 +34,15 @@ const ThumbnailPreview: React.FC<ThumbnailPreviewProps> = ({ imageUrl }) => {
         overflow="hidden"
         boxShadow="sm"
         transition="transform 0.2s"
-        _hover={{ transform: 'scale(1.05)' }}
-        _focus={{ outline: 'none', boxShadow: 'outline' }}
+        _hover={{ transform: "scale(1.05)" }}
+        _focus={{ outline: "none", boxShadow: "outline" }}
       >
-        <Image src={`${process.env.REACT_APP_API_URL}/artworks/${imageUrl}`} alt="Thumbnail" boxSize="50px" objectFit="cover" />
+        <Image
+          src={`${IMAGE_BASE_URL}/artworks/${imageUrl}`}
+          alt="Thumbnail"
+          boxSize="50px"
+          objectFit="cover"
+        />
       </Box>
 
       <Modal
@@ -54,7 +64,7 @@ const ThumbnailPreview: React.FC<ThumbnailPreviewProps> = ({ imageUrl }) => {
           <ModalCloseButton
             color="white"
             size="lg"
-            _hover={{ color: 'gray.300' }}
+            _hover={{ color: "gray.300" }}
           />
           <ModalBody
             display="flex"
@@ -64,7 +74,7 @@ const ThumbnailPreview: React.FC<ThumbnailPreviewProps> = ({ imageUrl }) => {
             height="100%"
           >
             <Image
-              src={`${process.env.REACT_APP_API_URL}/artworks/${imageUrl}`}
+              src={`${IMAGE_BASE_URL}/artworks/${imageUrl}`}
               alt="Full-size preview"
               maxHeight="90vh"
               maxWidth="100%"

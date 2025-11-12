@@ -1,7 +1,7 @@
 type User = {
   username: string;
   email: string;
-  role?: number;
+  role?: string;
   id?: string;
   createdAt?: string;
   isActive?: boolean;
@@ -10,4 +10,4 @@ type User = {
 type GetUserResopnse = {
   users: User[];
   pagination: Pagination;
-}
+};
