@@ -58,7 +58,7 @@
     img.loading = "lazy";
     const artworkImage = window.App.resolveArtworkAsset(artwork.thumbnail);
     img.src =
-      `http://localhost:5000/artworks/${artwork.thumbnail}` ||
+      `https://dev.dulcinea-art.com/backend/src/public/artworks/${artwork.thumbnail}` ||
       "assets/images/bg-365x362.png";
 
     imgWrap.appendChild(img);
@@ -118,7 +118,7 @@
     try {
       setFeedback("Loading artworks...", { hidden: false, tone: "info" });
       const { artworks } = await window.App.request(
-        "http://localhost:5000/api/artworks"
+        "https://dev.dulcinea-art.com/api/artworks"
       );
 
       if (!Array.isArray(artworks) || artworks.length === 0) {

@@ -229,7 +229,7 @@
       contactButton.removeAttribute("aria-disabled");
     }
 
-    const thumbnailUrl = `http://localhost:5000/artworks/${artwork.thumbnail}`;
+    const thumbnailUrl = `https://dev.dulcinea-art.com/backend/src/public/artworks/${artwork.thumbnail}`;
     const galleryImages = Array.isArray(artwork.images) ? artwork.images : [];
     console.log(galleryImages);
 
@@ -237,7 +237,7 @@
       thumbnailUrl,
       ...galleryImages.map((fileName) => {
         console.log(`${fileName}`);
-        return `http://localhost:5000/artworks/${fileName}`;
+        return `https://dev.dulcinea-art.com/backend/src/public/artworks/${fileName}`;
       }),
     ]
       .filter(Boolean)
@@ -273,7 +273,9 @@
     try {
       setFeedback("Loading artwork details...", "info");
       const { data } = await window.App.request(
-        `http://localhost:5000/api/artworks/${encodeURIComponent(artworkId)}`
+        `https://dev.dulcinea-art.com/api/artworks/${encodeURIComponent(
+          artworkId
+        )}`
       );
       if (!data || typeof data !== "object") {
         throw new Error("Artwork not found");
