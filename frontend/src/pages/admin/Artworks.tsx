@@ -1,54 +1,18 @@
-import { useState, useEffect } from 'react';
-import { Box, Flex, IconButton, Button } from '@chakra-ui/react';
-import { MdDelete, MdSearch, MdEdit } from 'react-icons/md';
+import { useState, useEffect } from "react";
+import { Box, Flex, IconButton, Button, Switch } from "@chakra-ui/react";
+import { MdDelete, MdSearch, MdEdit } from "react-icons/md";
 
-import Page from '../../components/common/Page';
-import { ApiCommand } from '../../lib/Api';
-import useToastNotification from '../../lib/hooks/useToastNotification';
-import DulcineaTable from '../../components/common/DulcineaTable';
-import DulcineaPagination from '../../components/common/DulcineaPagination';
-import useApi from '../../lib/hooks/useApi';
-import urlConstants from '../../lib/constants/url.constants';
-import DulcineaInput from '../../components/common/DulcineaInput';
-import ThumbnailPreview from '../../components/common/ThumbnailPreview';
-import EditArtworkModal from '../../components/artworks/EditArtworkModal';
-import { ArtworkStatus } from '../../lib/constants/artwork.constants';
-
-const ARTWORK_COLUMNS = [
-  {
-    key: 'title',
-    label: 'Title',
-  },
-  {
-    key: 'thumbnail',
-    label: 'Thumbnail',
-    render: (value: string) => <ThumbnailPreview imageUrl={value} />,
-  },
-  {
-    key: 'size',
-    label: 'Size',
-  },
-  {
-    key: 'media',
-    label: 'Media',
-  },
-  {
-    key: 'status',
-    label: 'Status',
-  },
-  {
-    key: 'price',
-    label: 'Price',
-  },
-  {
-    key: 'location',
-    label: 'Location',
-  },
-  {
-    key: 'notes',
-    label: 'Notes',
-  },
-];
+import Page from "../../components/common/Page";
+import { ApiCommand } from "../../lib/Api";
+import useToastNotification from "../../lib/hooks/useToastNotification";
+import DulcineaTable from "../../components/common/DulcineaTable";
+import DulcineaPagination from "../../components/common/DulcineaPagination";
+import useApi from "../../lib/hooks/useApi";
+import urlConstants from "../../lib/constants/url.constants";
+import DulcineaInput from "../../components/common/DulcineaInput";
+import ThumbnailPreview from "../../components/common/ThumbnailPreview";
+import EditArtworkModal from "../../components/artworks/EditArtworkModal";
+import { ArtworkStatus } from "../../lib/constants/artwork.constants";
 
 const {
   createArtwork: createArtworkUrl,
@@ -74,14 +38,93 @@ const Artworks = () => {
   const { sendRequest: editArtwork } = useApi<any>();
   const { sendRequest: deleteArtwork } = useApi<any>();
 
+  const ARTWORK_COLUMNS = [
+    {
+      key: "title",
+      label: "Title",
+    },
+    {
+      key: "thumbnail",
+      label: "Thumbnail",
+      render: (value: string) => <ThumbnailPreview imageUrl={value} />,
+    },
+    {
+      key: "size",
+      label: "Size",
+    },
+    {
+      key: "media",
+      label: "Media",
+    },
+    {
+      key: "status",
+      label: "Status",
+    },
+    {
+      key: "price",
+      label: "Price",
+    },
+    {
+      key: "location",
+      label: "Location",
+    },
+    {
+      key: "notes",
+      label: "Notes",
+    },
+    {
+      key: "isSpotlight",
+      label: "Spotlight",
+      render: (value: any, row: any) => {
+        return (
+          <Switch
+            colorScheme="teal"
+            isChecked={value == 1}
+            onChange={() => toogleArtworkSpotlight(row)}
+          />
+        );
+      },
+    },
+  ];
+
+  const toogleArtworkSpotlight = (row: any) => {
+    const newValue = row.isSpotlight === "0" ? 1 : 0; // toggle
+
+    editArtwork({
+      callback: (_data, error: string | null) => {
+        if (error) {
+          showToast({
+            title: "Failed",
+            description: error,
+            status: "error",
+          });
+          return;
+        }
+
+        showToast({
+          title: "Success",
+          description: "Spotlight updated",
+          status: "success",
+        });
+
+        fetchArtworks(); // refresh list
+      },
+      command: ApiCommand.PUT,
+      url: editArtworkUrl(row.id),
+      options: {
+        isSpotlight: newValue,
+      },
+    });
+  };
+
   const fetchArtworks = () => {
     getArtworks({
       callback: (data: GetArtworksResopnse | null, error: string | null) => {
         if (error) {
           showToast({
-            title: 'Failed',
+            title: "Failed",
             description: error,
-            status: 'error',
+            status: "error",
           });
           return;
         }
@@ -126,54 +169,57 @@ const Artworks = () => {
     removeExistingThumbnail: boolean
   ) => {
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('categoryId', categoryId);
-    formData.append('size', size);
-    formData.append('media', media);
-    formData.append('printNumber', printNumber);
-    formData.append('inventoryNumber', inventoryNumber);
-    formData.append('status', status);
-    formData.append('price', price);
-    formData.append('location', location);
-    formData.append('notes', notes);
+    formData.append("title", title);
+    formData.append("categoryId", categoryId);
+    formData.append("size", size);
+    formData.append("media", media);
+    formData.append("printNumber", printNumber);
+    formData.append("inventoryNumber", inventoryNumber);
+    formData.append("status", status);
+    formData.append("price", price);
+    formData.append("location", location);
+    formData.append("notes", notes);
     if (thumbnail) {
-      formData.append('thumbnail', thumbnail);
+      formData.append("thumbnail", thumbnail);
     }
     if (images && images.length > 0) {
       images.forEach((file) => {
-        formData.append('images', file);
+        formData.append("images", file);
       });
     }
 
     if (selectedArtwork) {
-      formData.append('existingImages', JSON.stringify(existingImages));
-      formData.append('removeExistingThumbnail', removeExistingThumbnail ? 'true' : 'false');
+      formData.append("existingImages", JSON.stringify(existingImages));
+      formData.append(
+        "removeExistingThumbnail",
+        removeExistingThumbnail ? "true" : "false"
+      );
 
       if (existingThumbnail) {
-        formData.append('existingThumbnail', existingThumbnail);
+        formData.append("existingThumbnail", existingThumbnail);
       }
 
-      formData.append('artworkId', selectedArtwork?.id || '');
+      formData.append("artworkId", selectedArtwork?.id || "");
       editArtwork({
         callback: (_data, error: string | null) => {
           if (error) {
             showToast({
-              title: 'Failed',
+              title: "Failed",
               description: error,
-              status: 'error',
+              status: "error",
             });
             return;
           }
           showToast({
-            title: 'Success',
-            description: 'Artwork updated successfully',
-            status: 'success',
+            title: "Success",
+            description: "Artwork updated successfully",
+            status: "success",
           });
           setIsOpenModal(false);
           fetchArtworks();
         },
         command: ApiCommand.PUT,
-        url: editArtworkUrl(selectedArtwork?.id || ''),
+        url: editArtworkUrl(selectedArtwork?.id || ""),
         options: formData,
       });
     } else {
@@ -181,16 +227,16 @@ const Artworks = () => {
         callback: (_data, error: string | null) => {
           if (error) {
             showToast({
-              title: 'Failed',
+              title: "Failed",
               description: error,
-              status: 'error',
+              status: "error",
             });
             return;
           }
           showToast({
-            title: 'Success',
-            description: 'Artwork created successfully',
-            status: 'success',
+            title: "Success",
+            description: "Artwork created successfully",
+            status: "success",
           });
           setIsOpenModal(false);
           fetchArtworks();
@@ -207,16 +253,16 @@ const Artworks = () => {
       callback: (_data, error: string | null) => {
         if (error) {
           showToast({
-            title: 'Failed',
+            title: "Failed",
             description: error,
-            status: 'error',
+            status: "error",
           });
           return;
         }
         showToast({
-          title: 'Success',
-          description: 'Artwork deleted successfully',
-          status: 'success',
+          title: "Success",
+          description: "Artwork deleted successfully",
+          status: "success",
         });
         fetchArtworks();
       },
@@ -233,25 +279,25 @@ const Artworks = () => {
   return (
     <Page>
       <Flex
-        justifyContent='space-between'
-        alignItems='center'
+        justifyContent="space-between"
+        alignItems="center"
         mb={6}
         gap={4}
-        flexWrap='wrap'
+        flexWrap="wrap"
       >
-        <Box flex='1' maxW='400px'>
+        <Box flex="1" maxW="400px">
           {/* <DulcineaInput
             placeholder='Search'
             rightIcon={<MdSearch color='gray.500' />}
           /> */}
         </Box>
         <Button
-          colorScheme='teal'
+          colorScheme="teal"
           px={6}
           py={4}
-          borderRadius='md'
-          fontWeight='bold'
-          _hover={{ bg: 'teal.300' }}
+          borderRadius="md"
+          fontWeight="bold"
+          _hover={{ bg: "teal.300" }}
           onClick={() => {
             setSelectedArtwork(undefined);
             setIsOpenModal(true);
@@ -261,11 +307,11 @@ const Artworks = () => {
         </Button>
       </Flex>
 
-      <Flex flexDirection='column' height='full' justifyContent='space-between'>
+      <Flex flexDirection="column" height="full" justifyContent="space-between">
         <Box
-          backgroundColor='white'
-          borderRadius='lg'
-          height='calc(100vh - 275px)'
+          backgroundColor="white"
+          borderRadius="lg"
+          height="calc(100vh - 275px)"
         >
           <DulcineaTable
             columns={ARTWORK_COLUMNS}
@@ -274,20 +320,20 @@ const Artworks = () => {
             actions={(row) => (
               <>
                 <IconButton
-                  aria-label='Edit Artwork'
+                  aria-label="Edit Artwork"
                   icon={<MdEdit />}
-                  variant='outline'
-                  colorScheme='teal'
-                  size='sm'
+                  variant="outline"
+                  colorScheme="teal"
+                  size="sm"
                   marginRight={4}
                   onClick={() => onEditArtwork(row.id)}
                 />
                 <IconButton
-                  aria-label='Delete Artwork'
+                  aria-label="Delete Artwork"
                   icon={<MdDelete />}
-                  variant='outline'
-                  colorScheme='red'
-                  size='sm'
+                  variant="outline"
+                  colorScheme="red"
+                  size="sm"
                   onClick={() => onDeleteArtwork(row.id)}
                 />
               </>

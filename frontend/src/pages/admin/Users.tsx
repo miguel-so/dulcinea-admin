@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Box, Flex, Tag, Switch, IconButton } from '@chakra-ui/react';
-import { MdDelete, MdVisibility } from 'react-icons/md';
+import { useState, useEffect } from "react";
+import { Box, Flex, Tag, Switch, IconButton } from "@chakra-ui/react";
+import { MdDelete, MdVisibility } from "react-icons/md";
 
-import Page from '../../components/common/Page';
-import { ApiCommand } from '../../lib/Api';
-import useToastNotification from '../../lib/hooks/useToastNotification';
-import DulcineaTable from '../../components/common/DulcineaTable';
-import DulcineaPagination from '../../components/common/DulcineaPagination';
-import useApi from '../../lib/hooks/useApi';
-import urlConstants from '../../lib/constants/url.constants';
+import Page from "../../components/common/Page";
+import { ApiCommand } from "../../lib/Api";
+import useToastNotification from "../../lib/hooks/useToastNotification";
+import DulcineaTable from "../../components/common/DulcineaTable";
+import DulcineaPagination from "../../components/common/DulcineaPagination";
+import useApi from "../../lib/hooks/useApi";
+import urlConstants from "../../lib/constants/url.constants";
 
 const {
   getUsers: getUsersUrl,
@@ -32,32 +32,34 @@ const Users = () => {
 
   const USER_COLUMNS = [
     {
-      key: 'username',
-      label: 'Name',
+      key: "username",
+      label: "Name",
     },
     {
-      key: 'email',
-      label: 'Email',
+      key: "email",
+      label: "Email",
     },
     {
-      key: 'role',
-      label: 'Role',
+      key: "role",
+      label: "Role",
       render: (value: string) => (
-        <Tag size='sm' colorScheme={value === 'artist' ? 'blue' : 'green'}>
-          {value === 'artist' ? 'Artist' : 'Super Admin'}
+        <Tag size="sm" colorScheme={value === "artist" ? "blue" : "green"}>
+          {value === "artist" ? "Artist" : "Super Admin"}
         </Tag>
       ),
     },
     {
-      key: 'isActive',
-      label: 'Status',
-      render: (value: any, row: any) => (
-        <Switch
-          colorScheme='teal'
-          isChecked={value}
-          onChange={() => toogleUserStatus(row)}
-        />
-      ),
+      key: "isActive",
+      label: "Status",
+      render: (value: any, row: any) => {
+        return (
+          <Switch
+            colorScheme="teal"
+            isChecked={value}
+            onChange={() => toogleUserStatus(row)}
+          />
+        );
+      },
     },
   ];
 
@@ -66,9 +68,9 @@ const Users = () => {
       callback: (data, error: string | null) => {
         if (error) {
           showToast({
-            title: 'Failed',
+            title: "Failed",
             description: error,
-            status: 'error',
+            status: "error",
           });
           return;
         }
@@ -79,11 +81,11 @@ const Users = () => {
         );
 
         showToast({
-          title: 'Success',
+          title: "Success",
           description: `User ${
-            row.isActive ? 'deactivated' : 'activated'
+            row.isActive ? "deactivated" : "activated"
           } successfully`,
-          status: 'success',
+          status: "success",
         });
       },
       command: ApiCommand.PUT,
@@ -96,9 +98,9 @@ const Users = () => {
       callback: (data: GetUserResopnse | null, error: string | null) => {
         if (error) {
           showToast({
-            title: 'Failed',
+            title: "Failed",
             description: error,
-            status: 'error',
+            status: "error",
           });
           return;
         }
@@ -130,28 +132,28 @@ const Users = () => {
       callback: (data, error: string | null) => {
         if (error) {
           showToast({
-            title: 'Failed',
+            title: "Failed",
             description: error,
-            status: 'error',
+            status: "error",
           });
           return;
         }
         showToast({
-          title: 'Success',
-          description: 'User deleted successfully.',
-          status: 'success',
+          title: "Success",
+          description: "User deleted successfully.",
+          status: "success",
         });
         fetchUsers();
       },
       command: ApiCommand.DELETE,
       url: deleteUserUrl(id),
-    })
+    });
   };
 
   return (
     <Page>
-      <Flex flexDirection='column' height='full' justifyContent='space-between'>
-        <Box backgroundColor='white' borderRadius='lg'>
+      <Flex flexDirection="column" height="full" justifyContent="space-between">
+        <Box backgroundColor="white" borderRadius="lg">
           <DulcineaTable
             columns={USER_COLUMNS}
             data={users}
@@ -159,12 +161,12 @@ const Users = () => {
             actions={(row) => (
               <>
                 <IconButton
-                  aria-label='Delete User'
+                  aria-label="Delete User"
                   icon={<MdDelete />}
-                  variant='outline'
-                  colorScheme='red'
-                  size='sm'
-                  disabled={row.role === 'super_admin'}
+                  variant="outline"
+                  colorScheme="red"
+                  size="sm"
+                  disabled={row.role === "super_admin"}
                   onClick={() => handleDeleteUser(row.id)}
                 />
               </>
