@@ -45,7 +45,7 @@ export const getArtworks = async (req: Request, res: Response) => {
     if (req.query.category) {
       // keep existing behavior (category param matched to 'category' previously)
       // Your model stores categoryId — some clients may still call ?category=slug, so keep the param name
-      whereClause.category = req.query.category;
+      whereClause.categoryId = req.query.category;
     }
 
     if (req.query.sold !== undefined) {
