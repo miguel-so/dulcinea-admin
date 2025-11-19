@@ -1,41 +1,52 @@
-import { Request, Response } from 'express';
-import Category from '../models/Category';
+import { Request, Response } from "express";
+import Category from "../models/Category";
+import Artwork from "../models/Artwork";
+import { Sequelize } from "sequelize";
 
 // @desc    Get all categories
 // @route   GET /api/categories
 // @access  Public
 export const getAllCategories = async (req: Request, res: Response) => {
-  const all = req.query.all === 'true';
+  const all = req.query.all === "true";
 
   const page = parseInt(req.query.page as string, 10) || 1;
   const limit = parseInt(req.query.limit as string, 10) || 10;
-
   const offset = (page - 1) * limit;
 
   try {
-    if (all) {
-      // Fetch all categories without pagination
-      const categories = await Category.findAll({
-        order: [['name', 'ASC']],
-      });
+    let categories = await Category.findAll({
+      offset: all ? undefined : offset,
+      limit: all ? undefined : limit,
+      order: [["name", "ASC"]],
+    });
 
+    // Attach random artwork thumbnail for each category
+    const categoriesWithThumbs = await Promise.all(
+      categories.map(async (cat) => {
+        const art = await Artwork.findOne({
+          where: { categoryId: cat.id },
+          order: [Sequelize.literal("RAND()")], // random artwork
+        });
+
+        return {
+          ...cat.toJSON(),
+          thumbnail: art ? art.thumbnail : null, // attach thumbnail
+        };
+      })
+    );
+
+    if (all) {
       return res.status(200).json({
-        categories,
+        categories: categoriesWithThumbs,
         pagination: null,
       });
     }
-    // Fetch paginated categories
-    const categories = await Category.findAll({
-      offset,
-      limit,
-      order: [['name', 'ASC']],
-    });
 
     // Count total records
     const totalCount = await Category.count();
 
     res.status(200).json({
-      categories,
+      categories: categoriesWithThumbs,
       pagination: {
         totalCount,
         totalPages: Math.ceil(totalCount / limit),
@@ -43,9 +54,9 @@ export const getAllCategories = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('Error fetching categories:', error);
+    console.error("Error fetching categories:", error);
     res.status(500).json({
-      message: 'An error occurred while fetching categories',
+      message: "An error occurred while fetching categories",
     });
   }
 };
@@ -62,7 +73,7 @@ export const createCategory = async (req: Request, res: Response) => {
     if (existingCategory) {
       return res.status(400).json({
         success: false,
-        message: 'Category with this name already exists',
+        message: "Category with this name already exists",
       });
     }
 
@@ -74,13 +85,13 @@ export const createCategory = async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       data: category,
-      message: 'Category created successfully',
+      message: "Category created successfully",
     });
   } catch (error: any) {
-    console.error('Create category error:', error);
+    console.error("Create category error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create category',
+      message: "Failed to create category",
     });
   }
 };
@@ -97,7 +108,7 @@ export const updateCategory = async (req: Request, res: Response) => {
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: 'Category not found',
+        message: "Category not found",
       });
     }
 
@@ -107,7 +118,7 @@ export const updateCategory = async (req: Request, res: Response) => {
       if (existingCategory) {
         return res.status(400).json({
           success: false,
-          message: 'Category with this name already exists',
+          message: "Category with this name already exists",
         });
       }
     }
@@ -121,13 +132,13 @@ export const updateCategory = async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: category,
-      message: 'Category updated successfully',
+      message: "Category updated successfully",
     });
   } catch (error: any) {
-    console.error('Update category error:', error);
+    console.error("Update category error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update category',
+      message: "Failed to update category",
     });
   }
 };
@@ -143,7 +154,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: 'Category not found',
+        message: "Category not found",
       });
     }
 
@@ -151,13 +162,13 @@ export const deleteCategory = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: 'Category deleted successfully',
+      message: "Category deleted successfully",
     });
   } catch (error: any) {
-    console.error('Delete category error:', error);
+    console.error("Delete category error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete category',
+      message: "Failed to delete category",
     });
   }
 };

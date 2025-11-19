@@ -3,7 +3,7 @@ import path from "path";
 
 import { Request, Response } from "express";
 import { Artwork, User } from "../models";
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
 
 interface AuthRequest extends Request {
   user?: any;
@@ -13,14 +13,26 @@ interface AuthRequest extends Request {
 // @route   GET /api/artworks
 // @access  Public
 export const getArtworks = async (req: Request, res: Response) => {
+  // existing param preserved
   const all = req.query.all === "true";
 
-  const page = parseInt(req.query.page as string, 10) || 1;
-  const limit = parseInt(req.query.limit as string, 10) || 10;
+  // pagination defaults
+  const page = parseInt((req.query.page as string) || "1", 10) || 1;
+  // default page limit remains 10 (unchanged behavior)
+  const defaultLimit = 10;
+  const limitQuery =
+    req.query.limit !== undefined
+      ? parseInt(req.query.limit as string, 10)
+      : undefined;
+  const limit = !isNaN(Number(limitQuery)) ? Number(limitQuery) : defaultLimit;
   const offset = (page - 1) * limit;
 
+  // new query params
+  const isRandom = req.query.isRandom === "true";
+  const isSpotlight = req.query.isSpotlight === "true";
+
   try {
-    // Build filters
+    // Build filters (same as before)
     let whereClause: any = {};
 
     if (req.query.search) {
@@ -31,6 +43,8 @@ export const getArtworks = async (req: Request, res: Response) => {
     }
 
     if (req.query.category) {
+      // keep existing behavior (category param matched to 'category' previously)
+      // Your model stores categoryId — some clients may still call ?category=slug, so keep the param name
       whereClause.category = req.query.category;
     }
 
@@ -38,8 +52,14 @@ export const getArtworks = async (req: Request, res: Response) => {
       whereClause.sold = req.query.sold === "true";
     }
 
-    // If "all" is true, return all artworks without pagination
-    if (all) {
+    // Support filtering by isSpotlight
+    if (isSpotlight) {
+      // model field is isSpotlight (boolean)
+      whereClause.isSpotlight = true;
+    }
+
+    // If client asked for all (legacy) and not requesting random with limit override:
+    if (all && !isRandom) {
       const artworks = await Artwork.findAll({
         where: whereClause,
         include: [
@@ -57,9 +77,10 @@ export const getArtworks = async (req: Request, res: Response) => {
       });
     }
 
-    // Paginated query
-    const { count: totalCount, rows: artworks } = await Artwork.findAndCountAll(
-      {
+    // If client wants random selection (no need for pagination),
+    // return artworks array and pagination null to match "all" response style.
+    if (isRandom) {
+      const options: any = {
         where: whereClause,
         include: [
           {
@@ -67,13 +88,43 @@ export const getArtworks = async (req: Request, res: Response) => {
             as: "artist",
           },
         ],
-        order: [["createdAt", "DESC"]],
-        limit,
-        offset,
+        order: literal("RAND()"),
+      };
+
+      // If limit was provided, use it, otherwise default to 10 random items.
+      if (limitQuery && !isNaN(Number(limitQuery))) {
+        options.limit = Number(limitQuery);
+      } else {
+        // default fewer items for hero; keep defaultLimit
+        options.limit = defaultLimit;
       }
+
+      const artworks = await Artwork.findAll(options);
+
+      return res.status(200).json({
+        artworks,
+        pagination: null,
+      });
+    }
+
+    // Default paginated query (keeps original behavior)
+    const queryOptions: any = {
+      where: whereClause,
+      include: [
+        {
+          model: User,
+          as: "artist",
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      limit,
+      offset,
+    };
+
+    const { count: totalCount, rows: artworks } = await Artwork.findAndCountAll(
+      queryOptions
     );
 
-    // Return response in same structure as getAllCategories
     res.status(200).json({
       artworks,
       pagination: {
