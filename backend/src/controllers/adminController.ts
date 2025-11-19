@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { User } from '../models';
-import { Artwork } from '../models';
+import { Request, Response } from "express";
+import { User } from "../models";
+import { Artwork } from "../models";
 
 // @desc    Get all users (artists)
 // @route   GET /api/admin/users
@@ -17,17 +17,16 @@ export const getAllUsers = async (req: Request, res: Response) => {
       limit,
       attributes: {
         exclude: [
-          'password',
-          'resetPasswordToken',
-          'resetPasswordExpire',
-          'emailVerificationToken',
-          'emailVerificationExpire',
-          'resetPasswordCode',
-          'resetPasswordCodeExpire',
+          "password",
+          "resetPasswordToken",
+          "resetPasswordExpire",
+          "emailVerificationToken",
+          "emailVerificationExpire",
+          "resetPasswordCode",
+          "resetPasswordCodeExpire",
         ],
       },
     });
-
     const totalCount = await User.count();
 
     res.json({
@@ -39,10 +38,10 @@ export const getAllUsers = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('Get users error:', error);
+    console.error("Get users error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch users',
+      message: "Failed to fetch users",
     });
   }
 };
@@ -58,7 +57,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
       });
     }
 
@@ -66,13 +65,13 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: 'User deleted successfully',
+      message: "User deleted successfully",
     });
   } catch (error: any) {
-    console.error('Delete user error:', error);
+    console.error("Delete user error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete user',
+      message: "Failed to delete user",
     });
   }
 };
@@ -88,14 +87,14 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
       });
     }
 
-    if (user.role !== 'artist') {
+    if (user.role !== "artist") {
       return res.status(400).json({
         success: false,
-        message: 'Can only toggle status of artist accounts',
+        message: "Can only toggle status of artist accounts",
       });
     }
 
@@ -111,14 +110,14 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
         isActive: user.isActive,
       },
       message: `User ${
-        user.isActive ? 'activated' : 'deactivated'
+        user.isActive ? "activated" : "deactivated"
       } successfully`,
     });
   } catch (error: any) {
-    console.error('Toggle user status error:', error);
+    console.error("Toggle user status error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update user status',
+      message: "Failed to update user status",
     });
   }
 };
@@ -134,9 +133,9 @@ export const getAllArtworks = async (req: Request, res: Response) => {
     const whereClause: any = {};
 
     if (search) {
-      whereClause[require('sequelize').Op.or] = [
-        { title: { [require('sequelize').Op.like]: `%${search}%` } },
-        { description: { [require('sequelize').Op.like]: `%${search}%` } },
+      whereClause[require("sequelize").Op.or] = [
+        { title: { [require("sequelize").Op.like]: `%${search}%` } },
+        { description: { [require("sequelize").Op.like]: `%${search}%` } },
       ];
     }
 
@@ -145,7 +144,7 @@ export const getAllArtworks = async (req: Request, res: Response) => {
     }
 
     if (sold !== undefined) {
-      whereClause.sold = sold === 'true';
+      whereClause.sold = sold === "true";
     }
 
     const { count, rows: artworks } = await Artwork.findAndCountAll({
@@ -153,13 +152,13 @@ export const getAllArtworks = async (req: Request, res: Response) => {
       include: [
         {
           model: User,
-          as: 'artist',
-          attributes: ['id', 'name', 'email'],
+          as: "artist",
+          attributes: ["id", "name", "email"],
         },
       ],
       limit: Number(limit),
       offset,
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
     });
 
     res.json({
@@ -175,10 +174,10 @@ export const getAllArtworks = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('Get artworks error:', error);
+    console.error("Get artworks error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch artworks',
+      message: "Failed to fetch artworks",
     });
   }
 };
@@ -194,7 +193,7 @@ export const deleteArtwork = async (req: Request, res: Response) => {
     if (!artwork) {
       return res.status(404).json({
         success: false,
-        message: 'Artwork not found',
+        message: "Artwork not found",
       });
     }
 
@@ -202,13 +201,13 @@ export const deleteArtwork = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: 'Artwork deleted successfully',
+      message: "Artwork deleted successfully",
     });
   } catch (error: any) {
-    console.error('Delete artwork error:', error);
+    console.error("Delete artwork error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete artwork',
+      message: "Failed to delete artwork",
     });
   }
 };

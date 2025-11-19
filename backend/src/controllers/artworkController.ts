@@ -162,6 +162,7 @@ export const createArtwork = async (req: Request, res: Response) => {
       artistId: (req as any).user.id,
       thumbnail: thumbnail ? thumbnail.filename : null,
       images: images.map((img: Express.Multer.File) => img.filename),
+      isSpotlight: false,
     });
 
     return res.status(201).json({
@@ -211,11 +212,15 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
       }
     };
 
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    const files = req.files as
+      | { [fieldname: string]: Express.Multer.File[] }
+      | undefined;
     const thumbnailFile = files?.thumbnail?.[0];
     let galleryFiles: Express.Multer.File[] = files?.images ?? [];
 
-    const currentImages = Array.isArray(artwork.images) ? [...artwork.images] : [];
+    const currentImages = Array.isArray(artwork.images)
+      ? [...artwork.images]
+      : [];
 
     let requestedExistingImages: string[] | undefined;
     if (typeof req.body.existingImages === "string") {
@@ -232,7 +237,9 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
     }
 
     const imagesToKeepSource = requestedExistingImages ?? currentImages;
-    const imagesToKeep = imagesToKeepSource.filter((filename) => currentImages.includes(filename));
+    const imagesToKeep = imagesToKeepSource.filter((filename) =>
+      currentImages.includes(filename)
+    );
     const uniqueImagesToKeep = Array.from(new Set(imagesToKeep));
 
     const imagesToDelete = currentImages.filter(
@@ -242,7 +249,10 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
 
     const galleryMaxFiles = 4;
     if (uniqueImagesToKeep.length + galleryFiles.length > galleryMaxFiles) {
-      const allowedNewFiles = Math.max(galleryMaxFiles - uniqueImagesToKeep.length, 0);
+      const allowedNewFiles = Math.max(
+        galleryMaxFiles - uniqueImagesToKeep.length,
+        0
+      );
       const excessFiles = galleryFiles.slice(allowedNewFiles);
       excessFiles.forEach((file) => deleteFile(file.filename));
       galleryFiles = galleryFiles.slice(allowedNewFiles);
@@ -273,6 +283,7 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
       "price",
       "location",
       "notes",
+      "isSpotlight",
     ] as const;
 
     const payload: any = {};

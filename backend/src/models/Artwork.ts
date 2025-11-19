@@ -23,6 +23,7 @@ interface ArtworkAttributes {
   tags?: string[];
   createdAt: Date;
   updatedAt: Date;
+  isSpotlight: boolean;
 }
 
 interface ArtworkCreationAttributes
@@ -43,6 +44,7 @@ interface ArtworkCreationAttributes
     | "tags"
     | "createdAt"
     | "updatedAt"
+    | "isSpotlight"
   > {}
 
 class Artwork
@@ -66,6 +68,7 @@ class Artwork
   public artistId!: number;
   public categoryId?: string;
   public tags?: string[];
+  public isSpotlight!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -155,6 +158,11 @@ Artwork.init(
     tags: {
       type: DataTypes.JSON,
       allowNull: true,
+    },
+    isSpotlight: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.DATE,
