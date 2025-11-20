@@ -24,12 +24,25 @@ function toggleFavorite(art) {
 function updateFavoriteButton(id) {
   const btn = document.getElementById("favorite-btn");
   if (!btn) return;
+
+  const iconSpan = btn.querySelector("span.mobi-mbri-hearth");
+  if (!iconSpan) return;
+
+  const text = isFavorite(id) ? " Favorite" : " Mark as Favorite";
+
+  // Remove all text nodes except the icon span
+  btn.childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) node.remove();
+  });
+
+  // Add the new text after the icon
+  iconSpan.insertAdjacentText("afterend", text);
+
+  // Update button color
   if (isFavorite(id)) {
-    btn.textContent = "Favorite";
     btn.classList.remove("btn-danger");
     btn.classList.add("btn-success");
   } else {
-    btn.textContent = "Mark as Favorite";
     btn.classList.remove("btn-success");
     btn.classList.add("btn-danger");
   }
