@@ -100,7 +100,8 @@ const Artworks = () => {
   ];
 
   const toogleArtworkSpotlight = (row: any) => {
-    const newValue = row.isSpotlight === "0" ? 1 : 0; // toggle
+    console.log("Toggling spotlight for artwork:", row);
+    const newValue = row.isSpotlight == 0 ? 1 : 0; // toggle
 
     editArtwork({
       callback: (_data, error: string | null) => {

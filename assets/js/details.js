@@ -164,10 +164,12 @@ function updateFavoriteButton(id) {
         art.id
       )}`;
     }
-
+    console.log("art.thumbnail", art.thumbnail);
+    console.log("art.images", art.images);
     const images = [art.thumbnail, ...(art.images || [])]
       .filter(Boolean)
       .map((f) => `${API_BASE}/artworks/${f}`);
+    console.log("Images for carousel:", images);
     renderCarousel(images);
 
     if (detailsListElement) {

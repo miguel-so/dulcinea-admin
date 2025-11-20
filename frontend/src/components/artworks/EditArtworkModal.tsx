@@ -188,7 +188,7 @@ const EditArtworkModal = ({
               <DulcineaSelect
                 defaultValue={{
                   value: category,
-                  label: categories.find((c) => c.id === category)?.name || "",
+                  label: categories.find((c) => c.id == category)?.name || "",
                 }}
                 options={categoriesToSelectOptionsMapper(categories)}
                 onChange={onChangeCategory}
