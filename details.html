@@ -55,8 +55,69 @@
       href="assets/mobirise/css/mbr-additional.css?v=uy81n3"
       type="text/css"
     />
+
+    <style>
+      /* Zoom wrapper */
+      .zoom-container {
+        position: relative;
+        overflow: hidden;
+        cursor: zoom-in;
+      }
+
+      .zoom-container img {
+        transition: transform 0.3s ease;
+      }
+
+      .zoom-container:hover img {
+        transform: scale(2);
+        transform-origin: center center;
+      }
+
+      /* Carousel layout: main image + thumbnails */
+      .slides {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .carousel-inner {
+        width: 100%;
+        max-width: 1000px; /* Bigger main image width */
+        margin: 0 auto;
+      }
+
+      .carousel-inner img {
+        width: 100%;
+        height: 700px; /* Bigger main image height */
+        object-fit: contain;
+      }
+
+      /* Thumbnails below main image */
+      .carousel-thumbnails {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 0.5rem;
+        gap: 0.5rem;
+      }
+
+      .carousel-thumbnails img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 4px;
+        transition: border 0.2s ease;
+      }
+
+      .carousel-thumbnails img.active-thumb {
+        border-color: #28a745;
+      }
+    </style>
   </head>
   <body>
+    <!-- NAVBAR -->
     <section
       data-bs-version="5.1"
       class="menu menu2 cid-v0b5ifPp6l"
@@ -88,10 +149,7 @@
             aria-label="Toggle navigation"
           >
             <div class="hamburger">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
+              <span></span><span></span><span></span><span></span>
             </div>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -126,6 +184,7 @@
       </nav>
     </section>
 
+    <!-- HERO CARD -->
     <section
       data-bs-version="5.1"
       class="header14 cid-v0nykOqBnr"
@@ -140,28 +199,31 @@
           <div class="card col-12 col-md-12 col-lg-11">
             <div class="card-wrapper">
               <div class="card-box align-center">
-                <h1 class="card-title mbr-fonts-style mb-4 display-5">
-                  <strong>"I Wish It Would Rain"</strong>
+                <h1
+                  class="card-title mbr-fonts-style mb-4 display-5"
+                  id="art-title"
+                >
+                  Loading...
                 </h1>
-                <p class="mbr-text mbr-fonts-style mb-2 display-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  eiusmod tempor incididunt labore dolore magna aliqua.<br />Lorem
-                  ipsum dolor sit amet, consectetur adipiscing elit, sed eiusmod
-                  tempor incididunt labore dolore magna aliqua.<br />
+                <p
+                  class="mbr-text mbr-fonts-style mb-2 display-4"
+                  id="art-description"
+                >
+                  Please wait while the artwork loads.
                 </p>
                 <div class="mbr-section-btn mt-4">
-                  <a class="btn btn-secondary display-7" href="contact-us.html"
-                    ><span
+                  <a class="btn btn-secondary display-7" href="contact-us.html">
+                    <span
                       class="mdi-communication-phone mbr-iconfont mbr-iconfont-btn"
-                    ></span
-                    >Contact Artist</a
-                  >
-                  <a class="btn btn-danger display-7" href="details.html"
-                    ><span
+                    ></span>
+                    Contact Artist
+                  </a>
+                  <button class="btn btn-danger display-7" id="favorite-btn">
+                    <span
                       class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"
-                    ></span
-                    >Mark as favorite</a
-                  >
+                    ></span>
+                    Mark as Favorite
+                  </button>
                 </div>
               </div>
             </div>
@@ -170,6 +232,7 @@
       </div>
     </section>
 
+    <!-- ZOOMABLE CAROUSEL -->
     <section
       data-bs-version="5.1"
       class="slider1 realtym4_slider1 testimonials-slider cid-v0nmJiSHzo"
@@ -184,106 +247,32 @@
 
       <div class="main container">
         <div class="row justify-content-center">
-          <h5>
-            <br /><strong>Alternative Views<br /></strong><br />
-          </h5>
           <div class="second-col col-md-10">
             <div
               class="carousel slide slides"
+              data-artwork-carousel
               role="listbox"
               data-pause="true"
-              data-keyboard="false"
-              data-ride="carousel"
               data-bs-ride="carousel"
-              data-interval="5000"
-              data-bs-interval="5000"
+              data-bs-interval="3000"
             >
-              <ol class="carousel-indicators">
-                <li class="li1" data-slide-to="0" data-bs-slide-to="0"></li>
-                <li class="li2" data-slide-to="1" data-bs-slide-to="1"></li>
-                <li class="li3" data-slide-to="2" data-bs-slide-to="2"></li>
-                <li class="li4" data-slide-to="3" data-bs-slide-to="3"></li>
-                <li class="li5" data-slide-to="4" data-bs-slide-to="4"></li>
-              </ol>
-
-              <div class="carousel-inner">
-                <div class="carousel-item">
-                  <div class="media-container-row">
-                    <div class="col-md-12">
-                      <div class="wrap-img">
-                        <img
-                          src="assets/images/bg-1-365x362.png"
-                          class="img-responsive clients-img"
-                          alt=""
-                          title=""
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <div class="media-container-row">
-                    <div class="col-md-12">
-                      <div class="wrap-img">
-                        <img
-                          src="assets/images/capture-365x355.png"
-                          class="img-responsive clients-img"
-                          alt=""
-                          title=""
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <div class="media-container-row">
-                    <div class="col-md-12">
-                      <div class="wrap-img">
-                        <img
-                          src="assets/images/bg-1-365x362.png"
-                          class="img-responsive clients-img"
-                          alt=""
-                          title=""
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <div class="media-container-row">
-                    <div class="col-md-12">
-                      <div class="wrap-img">
-                        <img
-                          src="assets/images/capture-365x355.png"
-                          class="img-responsive clients-img"
-                          alt=""
-                          title=""
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <div class="media-container-row">
-                    <div class="col-md-12">
-                      <div class="wrap-img">
-                        <img
-                          src="assets/images/bg-1-365x362.png"
-                          class="img-responsive clients-img"
-                          alt=""
-                          title=""
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ol
+                class="carousel-indicators"
+                data-carousel-indicators
+                style="display: none"
+              ></ol>
+              <div class="carousel-inner" data-carousel-inner></div>
             </div>
+            <div
+              class="carousel-thumbnails mt-3 text-center"
+              data-carousel-thumbnails
+            ></div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- DETAILS LIST -->
     <section
       data-bs-version="5.1"
       class="article1 adaptm5 cid-v0nEBRqmGg mbr-parallax-background"
@@ -297,57 +286,8 @@
         <div class="row img-row justify-content-center m-0">
           <div class="img-container p-0 col-12 col-lg-6">
             <div class="list-wrap">
-              <div class="list-box">
-                <ul class="list mbr-fonts-style display-7">
-                  <li class="list-text">
-                    <strong>Type:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">Original Art</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Medium:&nbsp;</strong
-                    ><span style="font-size: 1.2rem"
-                      >Paintings &gt; Acrylic</span
-                    >
-                  </li>
-                  <li class="list-text">
-                    <strong>Style:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">Geometric</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Subject:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">Landscapes</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Year:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">2025</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Size:&nbsp;</strong
-                    ><span style="font-size: 1.2rem"
-                      >100.0 x 100.0 x 2.7 cm</span
-                    >
-                  </li>
-                  <li class="list-text">
-                    <strong>Ready to hang:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">Yes</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Frame:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">No</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Signed:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">Yes, In front</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Materials:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">acrylic on canvas</span>
-                  </li>
-                  <li class="list-text">
-                    <strong>Shipping:&nbsp;</strong
-                    ><span style="font-size: 1.2rem">Ships from France</span>
-                  </li>
-                </ul>
+              <div class="list-box" id="art-details">
+                <!-- Dynamic details list populated by JS -->
               </div>
             </div>
           </div>
@@ -355,6 +295,7 @@
       </div>
     </section>
 
+    <!-- FOOTER -->
     <section
       data-bs-version="5.1"
       class="powerm5 footer2 cid-v0bdXklusI"
@@ -387,11 +328,14 @@
       </div>
     </section>
 
+    <!-- SCRIPTS -->
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/parallax/jarallax.js"></script>
     <script src="assets/smoothscroll/smooth-scroll.js"></script>
     <script src="assets/ytplayer/index.js"></script>
     <script src="assets/dropdown/js/navbar-dropdown.js"></script>
     <script src="assets/theme/js/script.js"></script>
+    <script src="assets/js/config.dev.js"></script>
+    <script src="assets/js/details.js"></script>
   </body>
 </html>
