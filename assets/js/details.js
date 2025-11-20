@@ -136,9 +136,20 @@ function updateFavoriteButton(id) {
     if (descriptionElement)
       descriptionElement.textContent = art.description || "";
 
+    // Update favorite button
     if (favoriteBtn) {
       favoriteBtn.onclick = () => toggleFavorite(art);
       updateFavoriteButton(art.id);
+    }
+
+    // Update contact artist button with artworkId query param
+    const contactBtn = document.querySelector(
+      ".mbr-section-btn a.btn-secondary"
+    );
+    if (contactBtn) {
+      contactBtn.href = `contact-us.html?artworkId=${encodeURIComponent(
+        art.id
+      )}`;
     }
 
     const images = [art.thumbnail, ...(art.images || [])]
