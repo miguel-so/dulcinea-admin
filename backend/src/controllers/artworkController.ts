@@ -196,23 +196,58 @@ export const createArtwork = async (req: Request, res: Response) => {
       req.files && (req.files as any).thumbnail
         ? (req.files as any).thumbnail[0]
         : null;
+
     const images =
       req.files && (req.files as any).images ? (req.files as any).images : [];
 
+    // REQUIRED FIELDS
+    if (!title || !categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Title and categoryId are required.",
+      });
+    }
+
+    if (!thumbnail) {
+      return res.status(400).json({
+        success: false,
+        message: "Thumbnail image is required.",
+      });
+    }
+
+    if (price === undefined || price === null || price === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Price is required.",
+      });
+    }
+
+    // CREATE ARTWORK
     const artwork = await Artwork.create({
       title,
       categoryId,
-      size,
-      media,
-      printNumber,
-      inventoryNumber,
-      status,
-      price,
-      location,
-      notes,
+
+      // NOT NULL → always empty string, never null
+      size: size ?? "",
+
+      // OPTIONAL → empty string fallback
+      media: media ?? "",
+      printNumber: printNumber ?? "",
+      inventoryNumber: inventoryNumber ?? "",
+      location: location ?? "",
+      notes: notes ?? "",
+
+      // status: can be null -> default from DB will apply
+      status: status ?? undefined,
+
+      // PRICE REQUIRED → send as number
+      price: parseFloat(price),
+
       artistId: (req as any).user.id,
-      thumbnail: thumbnail ? thumbnail.filename : null,
+
+      thumbnail: thumbnail.filename,
       images: images.map((img: Express.Multer.File) => img.filename),
+
       isSpotlight: false,
     });
 
@@ -253,9 +288,7 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
 
     const uploadDir = path.join(__dirname, "../public/artworks");
     const deleteFile = (filename: string | null | undefined) => {
-      if (!filename) {
-        return;
-      }
+      if (!filename) return;
 
       const filePath = path.join(uploadDir, filename);
       if (fs.existsSync(filePath)) {
@@ -338,8 +371,13 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
     ] as const;
 
     const payload: any = {};
+
     updatableFields.forEach((field) => {
       if (req.body[field] !== undefined) {
+        // ⭐ SUPER ADMIN ONLY CAN UPDATE isSpotlight
+        if (field === "isSpotlight" && req.user!.role !== "super_admin") {
+          return; // skip
+        }
         payload[field] = req.body[field];
       }
     });

@@ -13,6 +13,7 @@ import DulcineaInput from "../../components/common/DulcineaInput";
 import ThumbnailPreview from "../../components/common/ThumbnailPreview";
 import EditArtworkModal from "../../components/artworks/EditArtworkModal";
 import { ArtworkStatus } from "../../lib/constants/artwork.constants";
+import { useAuth } from "../../lib/contexts/AuthContext";
 
 const {
   createArtwork: createArtworkUrl,
@@ -29,6 +30,8 @@ const Artworks = () => {
   const [pageSize, setPageSize] = useState<number>(5);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork>();
+
+  const { user } = useAuth();
 
   const showToast = useToastNotification();
 
@@ -76,11 +79,20 @@ const Artworks = () => {
       key: "isSpotlight",
       label: "Spotlight",
       render: (value: any, row: any) => {
+        const userRole = user?.role; // or however you store role
+        const isSuperAdmin = userRole === "super_admin";
+
         return (
           <Switch
             colorScheme="teal"
             isChecked={value == 1}
-            onChange={() => toogleArtworkSpotlight(row)}
+            isDisabled={!isSuperAdmin} // 🔥 disable switch for non-super-admin
+            onChange={() => {
+              if (isSuperAdmin) {
+                // 🔥 prevent execution
+                toogleArtworkSpotlight(row);
+              }
+            }}
           />
         );
       },

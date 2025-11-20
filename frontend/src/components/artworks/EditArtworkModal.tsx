@@ -5,15 +5,15 @@ import DulcineaModal from "../common/DulcineaModal";
 import DulcineaInput from "../common/DulcineaInput";
 import DulcineaTextarea from "../common/DulcineaTextarea";
 import DulcineaImageDragDrop from "../common/DulcineaImageDragDrop";
-import { ArtworkStatus } from "../../lib/constants/artwork.constants";
+import DulcineaImageGalleryDragDrop from "../common/DulcineaImageGalleryDragDrop";
 import DulcineaSelect from "../common/DulcineaSelect";
+import { ArtworkStatus } from "../../lib/constants/artwork.constants";
 import { ActionMeta, SingleValue } from "react-select";
 import urlConstants from "../../lib/constants/url.constants";
 import useApi from "../../lib/hooks/useApi";
 import { ApiCommand } from "../../lib/Api";
 import useToastNotification from "../../lib/hooks/useToastNotification";
 import { categoriesToSelectOptionsMapper } from "../../lib/utils";
-import DulcineaImageGalleryDragDrop from "../common/DulcineaImageGalleryDragDrop";
 
 const { getCategories: getCategoriesUrl } = urlConstants.categories;
 
@@ -67,12 +67,13 @@ const EditArtworkModal = ({
   const [location, setLocation] = useState<string>("");
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [images, setImages] = useState<File[]>([]); // new files
+  const [images, setImages] = useState<File[]>([]);
   const [existingThumbnail, setExistingThumbnail] = useState<string | null>(
     null
   );
-  const [thumbnail, setThumbnail] = useState<File | null>(null); // new thumbnail file
-  const [removeExistingThumbnail, setRemoveExistingThumbnail] = useState<boolean>(false);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [removeExistingThumbnail, setRemoveExistingThumbnail] =
+    useState<boolean>(false);
 
   const { sendRequest: getCategories } = useApi<GetCategoriesResopnse>();
   const showToast = useToastNotification();
@@ -100,9 +101,9 @@ const EditArtworkModal = ({
     setThumbnail(null);
     setRemoveExistingThumbnail(false);
   }, [selectedArtwork, isOpen]);
+
   const handleThumbnailSelect = (file: File | null) => {
     setThumbnail(file);
-
     if (file) {
       setRemoveExistingThumbnail(false);
     }
@@ -112,7 +113,6 @@ const EditArtworkModal = ({
     setExistingThumbnail(null);
     setRemoveExistingThumbnail(true);
   };
-
 
   const fetchCategories = () => {
     getCategories({
@@ -130,9 +130,7 @@ const EditArtworkModal = ({
       },
       url: getCategoriesUrl,
       command: ApiCommand.GET,
-      options: {
-        all: "true",
-      },
+      options: { all: "true" },
     });
   };
 
@@ -142,6 +140,10 @@ const EditArtworkModal = ({
   ) => {
     setCategory(newValue?.value || "");
   };
+
+  // --- Required fields validation ---
+  const isThumbnailValid = thumbnail !== null || existingThumbnail !== null;
+  const isSubmitDisabled = !title || !category || !price || !isThumbnailValid;
 
   return (
     <DulcineaModal
@@ -167,13 +169,12 @@ const EditArtworkModal = ({
         )
       }
       title={selectedArtwork ? "Edit Artwork" : "Create Artwork"}
-      isSubmitDisabled={!title}
+      isSubmitDisabled={isSubmitDisabled}
       size="3xl"
       body={
         <VStack spacing={6} align="stretch">
-          {/* --- Responsive Grid Layout --- */}
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel color="gray.600">Title</FormLabel>
               <DulcineaInput
                 placeholder="Enter title"
@@ -182,12 +183,12 @@ const EditArtworkModal = ({
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel color="gray.600">Category</FormLabel>
               <DulcineaSelect
                 defaultValue={{
                   value: category,
-                  label: categories.find((c) => c.id == category)?.name || "",
+                  label: categories.find((c) => c.id === category)?.name || "",
                 }}
                 options={categoriesToSelectOptionsMapper(categories)}
                 onChange={onChangeCategory}
@@ -225,8 +226,8 @@ const EditArtworkModal = ({
               <FormLabel color="gray.600">Inventory Number</FormLabel>
               <DulcineaInput
                 placeholder="Enter inventory number"
-                value={inventoryNumber}
                 type="number"
+                value={inventoryNumber}
                 onChange={(e) => setInventoryNumber(e.target.value)}
               />
             </FormControl>
@@ -236,24 +237,23 @@ const EditArtworkModal = ({
               <DulcineaSelect
                 placeholder="Select status"
                 options={statusOptions}
-                defaultValue={{
-                  label: status,
-                  value: status,
-                }}
+                defaultValue={{ label: status, value: status }}
                 onChange={(newValue) => {
                   setStatus(newValue?.value as ArtworkStatus);
                 }}
               />
             </FormControl>
-            <FormControl>
+
+            <FormControl isRequired>
               <FormLabel color="gray.600">Price</FormLabel>
               <DulcineaInput
                 placeholder="Enter price"
-                value={price}
                 type="number"
+                value={price}
                 onChange={(e) => setPrice(e.target.value)}
               />
             </FormControl>
+
             <FormControl>
               <FormLabel color="gray.600">Location</FormLabel>
               <DulcineaInput
@@ -262,7 +262,7 @@ const EditArtworkModal = ({
                 onChange={(e) => setLocation(e.target.value)}
               />
             </FormControl>
-            {/* --- Notes Section --- */}
+
             <FormControl>
               <FormLabel color="gray.600">Reflective Notes</FormLabel>
               <DulcineaTextarea
@@ -275,9 +275,8 @@ const EditArtworkModal = ({
           </SimpleGrid>
 
           <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
-            {/* --- Image Upload --- */}
-            <FormControl>
-              <FormLabel color="gray.600">Image</FormLabel>
+            <FormControl isRequired>
+              <FormLabel color="gray.600">Image (Thumbnail)</FormLabel>
               <DulcineaImageDragDrop
                 onFileSelect={handleThumbnailSelect}
                 defaultImageUrl={existingThumbnail || undefined}

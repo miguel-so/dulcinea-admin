@@ -56,13 +56,15 @@ const Login = () => {
         }
         if (!data) return null;
         const { token } = data.data;
-        const { email, username } = data.data.user;
+        const { email, username, role, isActive } = data.data.user;
         localStorage.setItem("dulcinea_auth_token", token);
         login({
           token,
           user: {
             email,
             username,
+            role,
+            isActive,
           },
         });
         navigate(Path.ARTWORKS);

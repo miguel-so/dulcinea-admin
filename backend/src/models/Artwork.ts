@@ -80,6 +80,7 @@ Artwork.init(
       autoIncrement: true,
       primaryKey: true,
     },
+
     title: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -88,34 +89,48 @@ Artwork.init(
         len: [1, 100],
       },
     },
+
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
+      defaultValue: "",
     },
+
     thumbnail: {
       type: DataTypes.STRING(500),
       allowNull: true,
     },
+
     images: {
       type: DataTypes.JSON,
       allowNull: true,
+      defaultValue: [],
     },
+
     size: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true, // ✅ made optional
+      defaultValue: "",
     },
+
     media: {
       type: DataTypes.STRING(100),
       allowNull: true,
+      defaultValue: "",
     },
+
     printNumber: {
       type: DataTypes.STRING(50),
       allowNull: true,
+      defaultValue: "",
     },
+
     inventoryNumber: {
       type: DataTypes.STRING(50),
       allowNull: true,
+      defaultValue: "",
     },
+
     status: {
       type: DataTypes.ENUM(
         ArtworkStatus.AVAILABLE,
@@ -126,23 +141,30 @@ Artwork.init(
       allowNull: false,
       defaultValue: ArtworkStatus.AVAILABLE,
     },
+
     price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
+
     location: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      defaultValue: "",
     },
+
     notes: {
       type: DataTypes.TEXT,
       allowNull: true,
+      defaultValue: "",
     },
+
     sold: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
+
     artistId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -151,24 +173,31 @@ Artwork.init(
         key: "id",
       },
     },
+
     categoryId: {
       type: DataTypes.STRING(50),
-      allowNull: true,
+      allowNull: true, // DB level can be null
+      defaultValue: "",
     },
+
     tags: {
       type: DataTypes.JSON,
       allowNull: true,
+      defaultValue: [],
     },
+
     isSpotlight: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
+
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
