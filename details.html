@@ -23,6 +23,7 @@
   <link rel="preload" href="https://fonts.googleapis.com/css?family=Inter+Tight:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter+Tight:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap"></noscript>
   <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css?v=dtl5H4"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css?v=dtl5H4" type="text/css">
+  <link rel="stylesheet" href="assets/custom/css/details.css">
 
   
   
@@ -70,9 +71,9 @@
 			<div class="card col-12 col-md-12 col-lg-11">
 				<div class="card-wrapper">
 					<div class="card-box align-center">
-						<h1 class="card-title mbr-fonts-style mb-4 display-5"><strong>Art Name</strong></h1>
-						<p class="mbr-text mbr-fonts-style mb-2 display-4"><strong><em>Category: Category Name</em></strong><br>Show the full details of art here.</p>
-						<div class="mbr-section-btn mt-4"><a class="btn btn-secondary display-7" href="contact-us.html"><span class="mdi-communication-email mbr-iconfont mbr-iconfont-btn"></span>Contact Artist</a> <a class="btn btn-danger display-7" href="details.html"><span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span>Mark as favorite</a></div>
+						<h1 class="card-title mbr-fonts-style mb-4 display-5" data-artwork-title><strong>Art Name</strong></h1>
+						<p class="mbr-text mbr-fonts-style mb-2 display-4"><strong><em>Category: <span data-artwork-category>Category Name</span></em></strong><br><span data-artwork-description>Show the full details of art here.</span></p>
+						<div class="mbr-section-btn mt-4"><a class="btn btn-secondary display-7" href="contact-us.html" data-contact-link><span class="mdi-communication-email mbr-iconfont mbr-iconfont-btn"></span>Contact Artist</a> <button type="button" class="btn btn-danger display-7" data-favorite-toggle><span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span>Mark as favorite</button></div>
 					</div>
 				</div>
 			</div>
@@ -93,69 +94,17 @@
 		<div class="row justify-content-center">
              <h5><br><strong>Alternative Views<br></strong><br></h5>
 			<div class="second-col col-md-10">
-				<div class="carousel slide slides" role="listbox" data-pause="true" data-keyboard="false" data-ride="carousel" data-bs-ride="carousel" data-interval="5000" data-bs-interval="5000">
-					<ol class="carousel-indicators">
-						<li class="li1" data-slide-to="0" data-bs-slide-to="0"></li>
-						<li class="li2" data-slide-to="1" data-bs-slide-to="1"></li>
-						<li class="li3" data-slide-to="2" data-bs-slide-to="2"></li>
-						<li class="li4" data-slide-to="3" data-bs-slide-to="3"></li>
-						<li class="li5" data-slide-to="4" data-bs-slide-to="4"></li>
+                <div class="details-main-image-wrapper mb-4" data-main-image-wrapper>
+                    <img src="assets/images/art20coming20soon-500x500.png" alt="Artwork image" class="details-main-image img-fluid" data-main-image>
+                </div>
+				<div class="carousel slide slides" id="artwork-gallery" role="listbox" data-pause="true" data-keyboard="false" data-ride="carousel" data-bs-ride="carousel" data-interval="5000" data-bs-interval="5000">
+					<ol class="carousel-indicators" data-gallery-indicators>
 						
 					</ol>
                    
-					<div class="carousel-inner">
+					<div class="carousel-inner" data-gallery-container>
 						
-						
-						
-						
-						
-						
-					<div class="carousel-item ">
-							<div class="media-container-row">
-								<div class="col-md-12">
-							
-									<div class="wrap-img ">
-										<img src="assets/images/bg-365x362.png" class="img-responsive clients-img" alt="" title="">
-									</div>
-								</div>
-							</div>
-						</div><div class="carousel-item ">
-							<div class="media-container-row">
-								<div class="col-md-12">
-							
-									<div class="wrap-img ">
-										<img src="assets/images/capture-365x355.png" class="img-responsive clients-img" alt="" title="">
-									</div>
-								</div>
-							</div>
-						</div><div class="carousel-item ">
-							<div class="media-container-row">
-								<div class="col-md-12">
-									
-									<div class="wrap-img ">
-										<img src="assets/images/bg-1-365x362.png" class="img-responsive clients-img" alt="" title="">
-									</div>
-								</div>
-							</div>
-						</div><div class="carousel-item ">
-							<div class="media-container-row">
-								<div class="col-md-12">
-									
-									<div class="wrap-img ">
-										<img src="assets/images/capture-365x355.png" class="img-responsive clients-img" alt="" title="">
-									</div>
-								</div>
-							</div>
-						</div><div class="carousel-item ">
-							<div class="media-container-row">
-								<div class="col-md-12">
-									
-									<div class="wrap-img ">
-										<img src="assets/images/pink2-452x555.png" class="img-responsive clients-img" alt="" title="">
-									</div>
-								</div>
-							</div>
-						</div></div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -175,7 +124,7 @@
                 <div class="list-wrap">
                     <div class="list-box">
                         <ul class="list mbr-fonts-style display-7">
-                            <li class="list-text"><strong>Title:&nbsp;</strong><span style="font-size: 1.2rem;">Original Art</span></li><li class="list-text"><strong>Size:&nbsp;</strong><span style="font-size: 1.2rem;">10 x 20</span></li><li class="list-text"><strong>Media: </strong>PNG</li><li class="list-text"><strong>Print Number:&nbsp;</strong><span style="font-size: 1.2rem;">205</span></li><li class="list-text"><strong>Inventory Number:&nbsp;</strong><span style="font-size: 1.2rem;">10</span></li><li class="list-text"><strong>Status:&nbsp;</strong><span style="font-size: 1.2rem;">Available</span></li><li class="list-text"><strong>Location:&nbsp;</strong><span style="font-size: 1.2rem;">USA</span></li><li class="list-text"><strong>Date Added:&nbsp;</strong><span style="font-size: 1.2rem;">08/05/2025</span></li><li class="list-text"><span style="font-size: 1.2rem;"><strong>Reflective Note:</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></li>
+                            <li class="list-text"><strong>Title:&nbsp;</strong><span style="font-size: 1.2rem;" data-field-title>Original Art</span></li><li class="list-text"><strong>Size:&nbsp;</strong><span style="font-size: 1.2rem;" data-field-size>10 x 20</span></li><li class="list-text"><strong>Media: </strong><span data-field-media>PNG</span></li><li class="list-text"><strong>Print Number:&nbsp;</strong><span style="font-size: 1.2rem;" data-field-print>205</span></li><li class="list-text"><strong>Inventory Number:&nbsp;</strong><span style="font-size: 1.2rem;" data-field-inventory>10</span></li><li class="list-text"><strong>Status:&nbsp;</strong><span style="font-size: 1.2rem;" data-field-status>Available</span></li><li class="list-text"><strong>Location:&nbsp;</strong><span style="font-size: 1.2rem;" data-field-location>USA</span></li><li class="list-text"><strong>Date Added:&nbsp;</strong><span style="font-size: 1.2rem;" data-field-date>08/05/2025</span></li><li class="list-text"><span style="font-size: 1.2rem;"><strong>Reflective Note:</strong> <span data-field-notes>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</span></span></li>
                         </ul>
                     </div>
                 </div>
@@ -222,6 +171,9 @@
   <script src="assets/ytplayer/index.js"></script>
   <script src="assets/dropdown/js/navbar-dropdown.js"></script>
   <script src="assets/theme/js/script.js"></script>
+  <script src="assets/custom/js/config.js"></script>
+  <script src="assets/custom/js/utils.js"></script>
+  <script src="assets/custom/js/details.js"></script>
   
   
   
