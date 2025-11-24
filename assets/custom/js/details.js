@@ -16,7 +16,9 @@
     !addFavorite ||
     !removeFavorite
   ) {
-    console.error("Dulcinea utilities are missing. Aborting details page init.");
+    console.error(
+      "Dulcinea utilities are missing. Aborting details page init."
+    );
     return;
   }
 
@@ -119,12 +121,24 @@
 
   const applyFavoriteState = () => {
     if (!favoriteButton || !state.artwork) return;
+
     const isFavorite = state.isFavorite;
+
+    // ICONS:
+    //  - Not Favorite → hollow heart (yellow button)
+    //  - Favorite → solid heart (red button)
     favoriteButton.innerHTML = isFavorite
-      ? '<span class="fa fa-heart mbr-iconfont mbr-iconfont-btn" style="color: rgb(249, 44, 80);"></span>Favorite'
-      : '<span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span>Mark as favorite';
-    favoriteButton.classList.toggle("btn-danger", isFavorite);
-    favoriteButton.classList.toggle("btn-outline-danger", !isFavorite);
+      ? '<span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span> Favorite'
+      : '<span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span> Mark as Favorite';
+
+    // BUTTON COLORS (MATCH arts.html EXACTLY)
+    if (isFavorite) {
+      // RED BUTTON for favorite
+      favoriteButton.className = "btn btn-danger display-7";
+    } else {
+      // YELLOW BUTTON for default state
+      favoriteButton.className = "btn btn-warning display-7";
+    }
   };
 
   const handleFavoriteClick = () => {
@@ -217,7 +231,9 @@
 
         galleryCarouselEl.addEventListener("slide.bs.carousel", (event) => {
           const nextIndex =
-            typeof event.to === "number" ? event.to : event.relatedTarget
+            typeof event.to === "number"
+              ? event.to
+              : event.relatedTarget
               ? Array.prototype.indexOf.call(
                   galleryContainer.children,
                   event.relatedTarget
@@ -238,7 +254,7 @@
     setText(categoryEl, categoryName || artwork.categoryId || "Uncategorised");
     setText(
       descriptionEl,
-      artwork.description || "No description provided for this artwork."
+      artwork.notes || "No description provided for this artwork."
     );
 
     setText(fieldSelectors.title, artwork.title);
@@ -249,7 +265,7 @@
     setText(fieldSelectors.status, formatStatus(artwork.status));
     setText(fieldSelectors.location, artwork.location);
     setText(fieldSelectors.date, formatDate(artwork.createdAt));
-    setText(fieldSelectors.notes, artwork.notes || artwork.description);
+    setText(fieldSelectors.notes, artwork.notes || artwork.notes);
 
     if (contactLink) {
       const url = new URL(contactLink.href, window.location.origin);
@@ -313,10 +329,7 @@
       const categoryName = await loadCategoryName(artwork.categoryId);
 
       hydrateFields(artwork, categoryName);
-      updateMainImage(
-        state.galleryImages[0].src,
-        state.galleryImages[0].alt
-      );
+      updateMainImage(state.galleryImages[0].src, state.galleryImages[0].alt);
       renderGallery();
       configureZoom();
       applyFavoriteState();
@@ -336,5 +349,3 @@
 
   document.addEventListener("DOMContentLoaded", initialise);
 })();
-
-

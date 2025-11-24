@@ -16,7 +16,9 @@
     !buildDetailsLink ||
     !buildArtsLink
   ) {
-    console.error("Dulcinea utilities are missing. Aborting landing page init.");
+    console.error(
+      "Dulcinea utilities are missing. Aborting landing page init."
+    );
     return;
   }
 
@@ -24,7 +26,9 @@
   const categoriesRows = Array.from(
     document.querySelectorAll("[data-category-grid]")
   );
-  const spotlightRow = document.querySelector("#features05-39 [data-spotlight-grid]");
+  const spotlightRow = document.querySelector(
+    "#features05-39 [data-spotlight-grid]"
+  );
 
   const toggleSectionState = (section, isEmpty, message) => {
     if (!section) return;
@@ -190,7 +194,11 @@
 
     if (!Array.isArray(categories) || categories.length === 0) {
       categoriesRows.forEach((row) =>
-        toggleSectionState(row.closest("section"), true, "No categories available yet.")
+        toggleSectionState(
+          row.closest("section"),
+          true,
+          "No categories available yet."
+        )
       );
       return;
     }
@@ -280,7 +288,7 @@
     clearChildren(spotlightRow);
 
     const spotlight = Array.isArray(artworks)
-      ? artworks.filter((artwork) => artwork && artwork.isSpotlight)
+      ? artworks.filter((artwork) => artwork && artwork.isSpotlight === "1")
       : [];
 
     if (!spotlight.length) {
@@ -318,7 +326,11 @@
       renderSpotlight(artworks);
     } catch (error) {
       console.error("Failed to initialise landing page", error);
-      toggleSectionState(heroSection, true, "Unable to load featured artworks.");
+      toggleSectionState(
+        heroSection,
+        true,
+        "Unable to load featured artworks."
+      );
       categoriesRows.forEach((row) =>
         toggleSectionState(
           row.closest("section"),
@@ -336,5 +348,3 @@
 
   document.addEventListener("DOMContentLoaded", initialiseLandingPage);
 })();
-
-

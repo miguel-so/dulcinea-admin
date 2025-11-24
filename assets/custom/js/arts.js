@@ -29,7 +29,9 @@
   const categoryId = query.category;
 
   const categoryTitle = document.querySelector("[data-category-title]");
-  const categoryDescription = document.querySelector("[data-category-description]");
+  const categoryDescription = document.querySelector(
+    "[data-category-description]"
+  );
   const favoritesSubtitle = document.querySelector("[data-favorites-subtitle]");
   const favoritesGrid = document.querySelector("[data-favorites-grid]");
   const artworksGrid = document.querySelector("[data-art-grid]");
@@ -51,28 +53,27 @@
   };
 
   const toggleEmptyNotice = (container, message) => {
-    if (!container) return;
-    const noticeSelector = "[data-empty-notice]";
-    let notice = container.querySelector(noticeSelector);
+    return null;
+    // if (!container) return;
+    // const noticeSelector = "[data-empty-notice]";
+    // let notice = container.querySelector(noticeSelector);
 
-    if (message) {
-      if (!notice) {
-        notice = document.createElement("p");
-        notice.dataset.emptyNotice = "true";
-        notice.className = "text-center text-muted mt-4 mb-0 display-7";
-        container.appendChild(notice);
-      }
-      notice.textContent = message;
-    } else if (notice) {
-      notice.remove();
-    }
+    // if (message) {
+    //   if (!notice) {
+    //     notice = document.createElement("p");
+    //     notice.dataset.emptyNotice = "true";
+    //     notice.className = "text-center text-muted mt-4 mb-0 display-7";
+    //     container.appendChild(notice);
+    //   }
+    //   notice.textContent = message;
+    // } else if (notice) {
+    //   notice.remove();
+    // }
   };
 
   const updateFavoritesSubtitle = (hasFavorites) => {
     if (!favoritesSubtitle) return;
-    favoritesSubtitle.textContent = hasFavorites
-      ? "Remove an artwork to move it back to the main list."
-      : "Mark artworks as favorites to see them here.";
+    favoritesSubtitle.textContent = hasFavorites ? "" : "No favorites";
   };
 
   const handleFavoriteToggle = (artworkId, shouldFavorite) => {
@@ -87,12 +88,14 @@
   };
 
   const buildCard = (artwork, { isFavorite }) => {
+    console.log("artwork", artwork);
     const item = document.createElement("div");
     item.className = "item features-image col-12 col-md-6 col-lg-3";
 
     const wrapper = document.createElement("div");
     wrapper.className = "item-wrapper";
 
+    // IMAGE WRAPPER
     const imageWrapper = document.createElement("div");
     imageWrapper.className = "item-img";
 
@@ -103,50 +106,59 @@
 
     imageWrapper.appendChild(image);
 
+    // CONTENT BLOCK
     const content = document.createElement("div");
-    content.className = "item-content";
+    content.className = "item-content"; // ← required for padding
 
+    // TITLE
     const title = document.createElement("h5");
     title.className = "item-title mbr-fonts-style display-7";
     title.innerHTML = `<strong>${artwork.title || "Untitled"}</strong>`;
 
+    // DESCRIPTION – matching static card: display-4 + <p>
     const description = document.createElement("p");
     description.className = "mbr-text mbr-fonts-style display-4";
-    description.textContent = truncate(artwork.description || "", 90);
+    description.textContent = truncate(artwork.notes || "", 50);
 
-    content.appendChild(title);
-    content.appendChild(description);
-
+    // FOOTER BUTTONS (correct Mobirise layout)
     const footer = document.createElement("div");
     footer.className = "mbr-section-btn item-footer";
 
+    // DETAILS BUTTON
     const detailsLink = document.createElement("a");
     detailsLink.className = "btn item-btn btn-primary display-4";
-    detailsLink.href = `${buildDetailsLink(artwork.id)}&category=${encodeURIComponent(
-      categoryId
-    )}`;
+    detailsLink.href = `${buildDetailsLink(
+      artwork.id
+    )}&category=${encodeURIComponent(categoryId)}`;
     detailsLink.textContent = "See Details";
 
-    const favoriteButton = document.createElement("button");
-    favoriteButton.type = "button";
+    // FAVORITE BUTTON
+    const favoriteButton = document.createElement("a");
     favoriteButton.className = isFavorite
       ? "btn item-btn btnwhite btn-danger display-4"
       : "btn item-btn btn-warning btnblack display-4";
+
     favoriteButton.innerHTML = isFavorite
-      ? '<span class="fa fa-heart mbr-iconfont mbr-iconfont-btn" style="color: rgb(249, 44, 80);"></span>Favorite'
-      : '<span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span>Mark As Favorite';
-    favoriteButton.addEventListener("click", () =>
-      handleFavoriteToggle(artwork.id, !isFavorite)
-    );
+      ? `<span class="fa fa-heart mbr-iconfont mbr-iconfont-btn" style="color: rgb(249, 44, 80);"></span>Favorite`
+      : `<span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span>Mark As Favorite`;
+
+    favoriteButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      handleFavoriteToggle(artwork.id, !isFavorite);
+    });
 
     footer.appendChild(detailsLink);
     footer.appendChild(favoriteButton);
 
+    // BUILD CARD
+    content.appendChild(title);
+    content.appendChild(description);
+    content.appendChild(footer);
+
     wrapper.appendChild(imageWrapper);
     wrapper.appendChild(content);
-    wrapper.appendChild(footer);
-
     item.appendChild(wrapper);
+
     return item;
   };
 
@@ -184,7 +196,10 @@
     );
 
     if (!remaining.length) {
-      toggleEmptyNotice(artworksGrid, "All artworks for this category are favorited.");
+      toggleEmptyNotice(
+        artworksGrid,
+        "All artworks for this category are favorited."
+      );
       return;
     }
 
@@ -242,5 +257,3 @@
 
   document.addEventListener("DOMContentLoaded", initialise);
 })();
-
-
