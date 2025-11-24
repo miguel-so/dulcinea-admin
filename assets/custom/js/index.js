@@ -288,7 +288,11 @@
     clearChildren(spotlightRow);
 
     const spotlight = Array.isArray(artworks)
-      ? artworks.filter((artwork) => artwork && artwork.isSpotlight === "1")
+      ? artworks.filter(
+          (artwork) =>
+            artwork &&
+            (artwork.isSpotlight === "1" || artwork.isSpotlight === true)
+        )
       : [];
 
     if (!spotlight.length) {
