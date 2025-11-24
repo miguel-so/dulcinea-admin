@@ -199,36 +199,26 @@
 
       <div class="main container">
         <div class="row justify-content-center">
-          <h5>
-            <br /><strong>Alternative Views<br /></strong><br />
-          </h5>
           <div class="second-col col-md-10">
             <div
-              class="details-main-image-wrapper mb-4"
-              data-main-image-wrapper
-            >
-              <img
-                src="assets/images/art20coming20soon-500x500.png"
-                alt="Artwork image"
-                class="details-main-image img-fluid"
-                data-main-image
-              />
-            </div>
-            <div
               class="carousel slide slides"
-              id="artwork-gallery"
+              data-artwork-carousel
               role="listbox"
               data-pause="true"
-              data-keyboard="false"
-              data-ride="carousel"
               data-bs-ride="carousel"
-              data-interval="5000"
-              data-bs-interval="5000"
+              data-bs-interval="3000"
             >
-              <ol class="carousel-indicators" data-gallery-indicators></ol>
-
-              <div class="carousel-inner" data-gallery-container></div>
+              <ol
+                class="carousel-indicators"
+                data-carousel-indicators
+                style="display: none"
+              ></ol>
+              <div class="carousel-inner" data-carousel-inner></div>
             </div>
+            <div
+              class="carousel-thumbnails mt-3 text-center"
+              data-carousel-thumbnails
+            ></div>
           </div>
         </div>
       </div>
