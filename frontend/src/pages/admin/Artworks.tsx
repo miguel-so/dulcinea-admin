@@ -74,7 +74,10 @@ const Artworks = () => {
     {
       key: "notes",
       label: "Notes",
+      render: (value: string) =>
+        value && value.length > 50 ? value.slice(0, 50) + "..." : value,
     },
+
     {
       key: "isSpotlight",
       label: "Spotlight",

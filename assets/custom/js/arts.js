@@ -52,25 +52,6 @@
     favorites: new Set(getFavorites()),
   };
 
-  const toggleEmptyNotice = (container, message) => {
-    return null;
-    // if (!container) return;
-    // const noticeSelector = "[data-empty-notice]";
-    // let notice = container.querySelector(noticeSelector);
-
-    // if (message) {
-    //   if (!notice) {
-    //     notice = document.createElement("p");
-    //     notice.dataset.emptyNotice = "true";
-    //     notice.className = "text-center text-muted mt-4 mb-0 display-7";
-    //     container.appendChild(notice);
-    //   }
-    //   notice.textContent = message;
-    // } else if (notice) {
-    //   notice.remove();
-    // }
-  };
-
   const updateFavoritesSubtitle = (hasFavorites) => {
     if (!favoritesSubtitle) return;
     favoritesSubtitle.textContent = hasFavorites ? "" : "No favorites";
@@ -172,15 +153,10 @@
 
     if (!favorites.length) {
       updateFavoritesSubtitle(false);
-      toggleEmptyNotice(
-        favoritesGrid,
-        "You have not marked any favorites yet."
-      );
       return;
     }
 
     updateFavoritesSubtitle(true);
-    toggleEmptyNotice(favoritesGrid, null);
 
     favorites.forEach((artwork) =>
       favoritesGrid.appendChild(buildCard(artwork, { isFavorite: true }))
@@ -196,14 +172,8 @@
     );
 
     if (!remaining.length) {
-      toggleEmptyNotice(
-        artworksGrid,
-        "All artworks for this category are favorited."
-      );
       return;
     }
-
-    toggleEmptyNotice(artworksGrid, null);
 
     remaining.forEach((artwork) =>
       artworksGrid.appendChild(buildCard(artwork, { isFavorite: false }))
@@ -220,10 +190,82 @@
       categoryTitle.textContent = category?.name || "Untitled Category";
     }
     if (categoryDescription) {
+      console.log("category", category);
       const description =
         (category && category.description) ||
         "Explore the artworks curated for this category.";
+      console.log("description", description);
       categoryDescription.textContent = description;
+      console.log("categoryDescription", categoryDescription);
+    }
+    // The theme script adds a "hidden" + animation classes to many elements
+    // on load. When we hydrate dynamic content the header elements can remain
+    // hidden. Make sure the header title/description/button are visible.
+    try {
+      const headerWrapper = categoryTitle?.closest(".content-wrapper");
+      const headerBtn = headerWrapper?.querySelector(".mbr-section-btn");
+      [categoryTitle, categoryDescription, headerBtn].forEach((el) => {
+        if (!el) return;
+        el.classList.remove(
+          "hidden",
+          "animate__animated",
+          "animate__delay-1s",
+          "animate__fadeIn"
+        );
+        el.style.display = "";
+        el.style.opacity = "";
+      });
+    } catch (err) {}
+    // Mark the header as hydrated and add a CSS override so the theme's
+    // animation system can't keep these elements invisible.
+    try {
+      const headerSection = document.querySelector("#header01-1l");
+      if (headerSection) {
+        headerSection.setAttribute("data-hydrated", "true");
+
+        // Add a one-time style override to force visibility for hydrated header
+        if (!document.getElementById("dulcinea-arts-hydrate-style")) {
+          const style = document.createElement("style");
+          style.id = "dulcinea-arts-hydrate-style";
+          style.textContent = `#header01-1l[data-hydrated="true"] .mbr-section-title, #header01-1l[data-hydrated="true"] .mbr-text, #header01-1l[data-hydrated="true"] .mbr-section-btn { visibility: visible !important; opacity: 1 !important; display: block !important; transform: none !important; }`;
+          document.head.appendChild(style);
+        }
+
+        // Safety: some theme logic may re-add hidden classes later — run a
+        // delayed cleanup to remove them again and ensure visibility.
+        setTimeout(() => {
+          try {
+            const hdr = document.querySelector("#header01-1l");
+            if (!hdr) return;
+            hdr
+              .querySelectorAll(
+                ".hidden, .animate__animated, .animate__delay-1s, .animate__fadeIn"
+              )
+              .forEach((n) => {
+                n.classList.remove(
+                  "hidden",
+                  "animate__animated",
+                  "animate__delay-1s",
+                  "animate__fadeIn"
+                );
+                n.style.opacity = "";
+                n.style.display = "";
+              });
+          } catch (e) {
+            /* ignore */
+          }
+        }, 700);
+        // Ensure the header keeps enough vertical space while the rest of the
+        // page is rendered to avoid the visual collapse you described.
+        try {
+          headerSection.style.minHeight = "350px";
+        } catch (e) {
+          // ignore
+        }
+        // (removed dynamic favorites margin — spacing will be handled via CSS)
+      }
+    } catch (err) {
+      // ignore
     }
   };
 
@@ -248,10 +290,6 @@
     } catch (error) {
       console.error("Failed to load category artworks", error);
       hydrateCategoryHeader(null);
-      toggleEmptyNotice(
-        artworksGrid,
-        "Unable to load artworks right now. Please try again later."
-      );
     }
   };
 

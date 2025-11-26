@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../config/database";
 
 interface CategoryAttributes {
   id: number;
@@ -9,9 +9,13 @@ interface CategoryAttributes {
   updatedAt: Date;
 }
 
-interface CategoryCreationAttributes extends Optional<CategoryAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+interface CategoryCreationAttributes
+  extends Optional<CategoryAttributes, "id" | "createdAt" | "updatedAt"> {}
 
-class Category extends Model<CategoryAttributes, CategoryCreationAttributes> implements CategoryAttributes {
+class Category
+  extends Model<CategoryAttributes, CategoryCreationAttributes>
+  implements CategoryAttributes
+{
   public id!: number;
   public name!: string;
   public description?: string;
@@ -30,40 +34,33 @@ Category.init(
       type: DataTypes.STRING(50),
       allowNull: false,
       unique: true,
-      validate: {
-        notEmpty: true,
-        len: [1, 50]
-      }
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
-      validate: {
-        len: [0, 200]
-      }
     },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    }
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
-    modelName: 'Category',
-    tableName: 'categories',
+    modelName: "Category",
+    tableName: "categories",
     timestamps: true,
     indexes: [
       {
         unique: true,
-        fields: ['name']
-      }
-    ]
+        fields: ["name"],
+      },
+    ],
   }
 );
 

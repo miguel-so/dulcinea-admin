@@ -1,25 +1,27 @@
-import { useState, useEffect } from 'react';
-import { Box, Flex, IconButton, Button } from '@chakra-ui/react';
-import { MdDelete, MdSearch, MdEdit } from 'react-icons/md';
+import { useState, useEffect } from "react";
+import { Box, Flex, IconButton, Button } from "@chakra-ui/react";
+import { MdDelete, MdSearch, MdEdit } from "react-icons/md";
 
-import Page from '../../components/common/Page';
-import { ApiCommand } from '../../lib/Api';
-import useToastNotification from '../../lib/hooks/useToastNotification';
-import useApi from '../../lib/hooks/useApi';
-import urlConstants from '../../lib/constants/url.constants';
-import EditCategoryModal from '../../components/categories/EditCategoryModal';
-import DulcineaInput from '../../components/common/DulcineaInput';
-import DulcineaTable from '../../components/common/DulcineaTable';
-import DulcineaPagination from '../../components/common/DulcineaPagination';
+import Page from "../../components/common/Page";
+import { ApiCommand } from "../../lib/Api";
+import useToastNotification from "../../lib/hooks/useToastNotification";
+import useApi from "../../lib/hooks/useApi";
+import urlConstants from "../../lib/constants/url.constants";
+import EditCategoryModal from "../../components/categories/EditCategoryModal";
+import DulcineaInput from "../../components/common/DulcineaInput";
+import DulcineaTable from "../../components/common/DulcineaTable";
+import DulcineaPagination from "../../components/common/DulcineaPagination";
 
 const CATEGORY_COLUMNS = [
   {
-    key: 'name',
-    label: 'Name',
+    key: "name",
+    label: "Name",
   },
   {
-    key: 'description',
-    label: 'Description',
+    key: "description",
+    label: "Description",
+    render: (value: string) =>
+      value && value.length > 50 ? value.slice(0, 50) + "..." : value,
   },
 ];
 
@@ -55,9 +57,9 @@ const Categories = () => {
       callback: (data: GetCategoriesResopnse | null, error: string | null) => {
         if (error) {
           showToast({
-            title: 'Failed',
+            title: "Failed",
             description: error,
-            status: 'error',
+            status: "error",
           });
           return;
         }
@@ -90,16 +92,16 @@ const Categories = () => {
         callback: (_data, error: string | null) => {
           if (error) {
             showToast({
-              title: 'Failed',
+              title: "Failed",
               description: error,
-              status: 'error',
+              status: "error",
             });
             return;
           }
           showToast({
-            title: 'Success',
-            description: 'Category updated successfully',
-            status: 'success',
+            title: "Success",
+            description: "Category updated successfully",
+            status: "success",
           });
           setIsOpenModal(false);
           fetchCategories();
@@ -116,16 +118,16 @@ const Categories = () => {
         callback: (_data, error: string | null) => {
           if (error) {
             showToast({
-              title: 'Failed',
+              title: "Failed",
               description: error,
-              status: 'error',
+              status: "error",
             });
             return;
           }
           showToast({
-            title: 'Success',
-            description: 'Category created successfully',
-            status: 'success',
+            title: "Success",
+            description: "Category created successfully",
+            status: "success",
           });
           setIsOpenModal(false);
           fetchCategories();
@@ -145,16 +147,16 @@ const Categories = () => {
       callback: (_data, error: string | null) => {
         if (error) {
           showToast({
-            title: 'Failed',
+            title: "Failed",
             description: error,
-            status: 'error',
+            status: "error",
           });
           return;
         }
         showToast({
-          title: 'Success',
-          description: 'Category deleted successfully',
-          status: 'success',
+          title: "Success",
+          description: "Category deleted successfully",
+          status: "success",
         });
         fetchCategories();
       },
@@ -171,25 +173,25 @@ const Categories = () => {
   return (
     <Page>
       <Flex
-        justifyContent='space-between'
-        alignItems='center'
+        justifyContent="space-between"
+        alignItems="center"
         mb={6}
         gap={4}
-        flexWrap='wrap'
+        flexWrap="wrap"
       >
-        <Box flex='1' maxW='400px'>
+        <Box flex="1" maxW="400px">
           {/* <DulcineaInput
             placeholder='Search'
             rightIcon={<MdSearch color='gray.500' />}
           /> */}
         </Box>
         <Button
-          colorScheme='teal'
+          colorScheme="teal"
           px={6}
           py={4}
-          borderRadius='md'
-          fontWeight='bold'
-          _hover={{ bg: 'teal.300' }}
+          borderRadius="md"
+          fontWeight="bold"
+          _hover={{ bg: "teal.300" }}
           onClick={() => {
             setSelectedCategory(undefined);
             setIsOpenModal(true);
@@ -199,11 +201,11 @@ const Categories = () => {
         </Button>
       </Flex>
 
-      <Flex flexDirection='column' height='full' justifyContent='space-between'>
+      <Flex flexDirection="column" height="full" justifyContent="space-between">
         <Box
-          backgroundColor='white'
-          borderRadius='lg'
-          height='calc(100vh - 275px)'
+          backgroundColor="white"
+          borderRadius="lg"
+          height="calc(100vh - 275px)"
         >
           <DulcineaTable
             columns={CATEGORY_COLUMNS}
@@ -212,20 +214,20 @@ const Categories = () => {
             actions={(row) => (
               <>
                 <IconButton
-                  aria-label='Edit Category'
+                  aria-label="Edit Category"
                   icon={<MdEdit />}
-                  variant='outline'
-                  colorScheme='teal'
-                  size='sm'
+                  variant="outline"
+                  colorScheme="teal"
+                  size="sm"
                   marginRight={4}
                   onClick={() => onEditCategory(row.id)}
                 />
                 <IconButton
-                  aria-label='Delete Category'
+                  aria-label="Delete Category"
                   icon={<MdDelete />}
-                  variant='outline'
-                  colorScheme='red'
-                  size='sm'
+                  variant="outline"
+                  colorScheme="red"
+                  size="sm"
                   onClick={() => onDeleteCategory(row.id)}
                 />
               </>

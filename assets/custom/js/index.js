@@ -114,6 +114,13 @@
     }
   };
 
+  const enableEmblaButtons = () => {
+    const prevBtn = document.querySelector(".embla__button--prev");
+    const nextBtn = document.querySelector(".embla__button--next");
+    if (prevBtn) prevBtn.removeAttribute("disabled");
+    if (nextBtn) nextBtn.removeAttribute("disabled");
+  };
+
   const renderHero = (artworks) => {
     if (!heroSection) return;
     const container = heroSection.querySelector(".embla__container");
@@ -133,6 +140,7 @@
 
     toggleSectionState(heroSection, false);
     reinitHeroCarousel();
+    enableEmblaButtons();
   };
 
   const buildCategoryCard = (category) => {
@@ -254,16 +262,19 @@
     const content = document.createElement("div");
     content.className = "item-content align-left";
 
+    // Artwork title
     const title = document.createElement("h5");
     title.className = "item-title mbr-fonts-style display-7";
     title.innerHTML = `<strong>${artwork.title || "Artwork"}</strong>`;
-
-    const description = document.createElement("p");
-    description.className = "mbr-text mbr-fonts-style display-4";
-    description.textContent = truncate(artwork.description || "", 90);
-
     content.appendChild(title);
-    content.appendChild(description);
+
+    // Artwork notes (truncated to 50 characters)
+    if (artwork.notes) {
+      const notes = document.createElement("p");
+      notes.className = "mbr-text mbr-fonts-style display-4 text-muted";
+      notes.textContent = truncate(artwork.notes, 50); // Truncate to 50 chars
+      content.appendChild(notes);
+    }
 
     const footer = document.createElement("div");
     footer.className = "mbr-section-btn item-footer";
@@ -304,7 +315,7 @@
       return;
     }
 
-    spotlight.slice(0, 4).forEach((artwork) => {
+    spotlight.forEach((artwork) => {
       spotlightRow.appendChild(buildSpotlightCard(artwork));
     });
 

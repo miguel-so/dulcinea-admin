@@ -339,7 +339,7 @@
     //  - Not Favorite → hollow heart (yellow button)
     //  - Favorite → solid heart (red button)
     favoriteButton.innerHTML = isFavorite
-      ? '<span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span> Favorite'
+      ? '<span class="fa fa-heart mbr-iconfont mbr-iconfont-btn" style="color: rgb(249, 44, 80);"></span>Favorite'
       : '<span class="mobi-mbri mobi-mbri-hearth mbr-iconfont mbr-iconfont-btn"></span> Mark as Favorite';
 
     // BUTTON COLORS (MATCH arts.html EXACTLY)
