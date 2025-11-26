@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table, Thead, Tbody, Tr, Th, Td, Box } from '@chakra-ui/react';
+import React from "react";
+import { Table, Thead, Tbody, Tr, Th, Td, Box } from "@chakra-ui/react";
 
 interface Column {
   key: string; // Unique key for the column (used to map data)
@@ -21,32 +21,28 @@ const DulcineaTable: React.FC<CustomTableProps> = ({
   actions,
 }) => {
   return (
-    <Box overflowX='auto' height="full" borderWidth='1px' borderRadius='md' padding={4}>
-      <Table variant='simple'>
-        <Thead height='50px'>
+    <Box
+      overflowX="auto"
+      height="full"
+      borderWidth="1px"
+      borderRadius="md"
+      padding={4}
+    >
+      <Table variant="simple">
+        <Thead height="50px">
           <Tr>
             {columns.map((col) => (
               <Th
                 key={col.key}
-                fontSize='sm'
-                fontWeight='bold'
-                textTransform='uppercase'
-                position='sticky'
-                top='0'
-                zIndex='1'
+                fontSize="sm"
+                fontWeight="bold"
+                textTransform="uppercase"
               >
                 {col.label}
               </Th>
             ))}
             {actions && (
-              <Th
-                fontSize='sm'
-                fontWeight='bold'
-                textTransform='uppercase'
-                position='sticky'
-                top='0'
-                zIndex='1'
-              >
+              <Th fontSize="sm" fontWeight="bold" textTransform="uppercase">
                 Actions
               </Th>
             )}
@@ -57,7 +53,7 @@ const DulcineaTable: React.FC<CustomTableProps> = ({
             <Tr>
               <Td
                 colSpan={columns.length + (actions ? 1 : 0)}
-                textAlign='center'
+                textAlign="center"
                 py={4}
               >
                 Loading...
@@ -78,7 +74,7 @@ const DulcineaTable: React.FC<CustomTableProps> = ({
             <Tr>
               <Td
                 colSpan={columns.length + (actions ? 1 : 0)}
-                textAlign='center'
+                textAlign="center"
                 py={4}
               >
                 No data found

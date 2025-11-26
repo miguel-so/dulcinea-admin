@@ -35,30 +35,25 @@ export const getArtworks = async (req: Request, res: Response) => {
     // Build filters (same as before)
     let whereClause: any = {};
 
-    if (req.query.search) {
+    if (req.query.searchKeyword) {
       whereClause[Op.or] = [
-        { title: { [Op.like]: `%${req.query.search}%` } },
-        { description: { [Op.like]: `%${req.query.search}%` } },
+        { title: { [Op.like]: `%${req.query.searchKeyword}%` } },
+        { notes: { [Op.like]: `%${req.query.searchKeyword}%` } },
       ];
     }
 
+    if (req.query.searchStatus && req.query.searchStatus !== "null") {
+      whereClause.status = req.query.searchStatus;
+    }
+
     if (req.query.category) {
-      // keep existing behavior (category param matched to 'category' previously)
-      // Your model stores categoryId — some clients may still call ?category=slug, so keep the param name
       whereClause.categoryId = req.query.category;
     }
 
-    if (req.query.sold !== undefined) {
-      whereClause.sold = req.query.sold === "true";
-    }
-
-    // Support filtering by isSpotlight
     if (isSpotlight) {
-      // model field is isSpotlight (boolean)
       whereClause.isSpotlight = true;
     }
 
-    // If client asked for all (legacy) and not requesting random with limit override:
     if (all && !isRandom) {
       const artworks = await Artwork.findAll({
         where: whereClause,
@@ -77,8 +72,6 @@ export const getArtworks = async (req: Request, res: Response) => {
       });
     }
 
-    // If client wants random selection (no need for pagination),
-    // return artworks array and pagination null to match "all" response style.
     if (isRandom) {
       const options: any = {
         where: whereClause,
@@ -215,39 +208,21 @@ export const createArtwork = async (req: Request, res: Response) => {
       });
     }
 
-    if (price === undefined || price === null || price === "") {
-      return res.status(400).json({
-        success: false,
-        message: "Price is required.",
-      });
-    }
-
     // CREATE ARTWORK
     const artwork = await Artwork.create({
       title,
       categoryId,
-
-      // NOT NULL → always empty string, never null
       size: size ?? "",
-
-      // OPTIONAL → empty string fallback
       media: media ?? "",
       printNumber: printNumber ?? "",
       inventoryNumber: inventoryNumber ?? "",
       location: location ?? "",
       notes: notes ?? "",
-
-      // status: can be null -> default from DB will apply
       status: status ?? undefined,
-
-      // PRICE REQUIRED → send as number
-      price: parseFloat(price),
-
+      price: price ? parseFloat(price) : null,
       artistId: (req as any).user.id,
-
       thumbnail: thumbnail.filename,
       images: images.map((img: Express.Multer.File) => img.filename),
-
       isSpotlight: false,
     });
 

@@ -6,7 +6,6 @@ import { ArtworkStatus } from "../utils/types";
 interface ArtworkAttributes {
   id: number;
   title: string;
-  description?: string;
   thumbnail?: string; // single main image
   images?: string[]; // multiple image filenames
   size: string;
@@ -14,13 +13,11 @@ interface ArtworkAttributes {
   printNumber?: string;
   inventoryNumber?: string;
   status: ArtworkStatus;
-  price?: number;
+  price?: number | null;
   location?: string;
   notes?: string;
-  sold: boolean;
   artistId: number;
   categoryId?: string;
-  tags?: string[];
   createdAt: Date;
   updatedAt: Date;
   isSpotlight: boolean;
@@ -30,7 +27,6 @@ interface ArtworkCreationAttributes
   extends Optional<
     ArtworkAttributes,
     | "id"
-    | "description"
     | "thumbnail"
     | "images"
     | "media"
@@ -39,9 +35,7 @@ interface ArtworkCreationAttributes
     | "price"
     | "location"
     | "notes"
-    | "sold"
     | "categoryId"
-    | "tags"
     | "createdAt"
     | "updatedAt"
     | "isSpotlight"
@@ -53,7 +47,6 @@ class Artwork
 {
   public id!: number;
   public title!: string;
-  public description?: string;
   public thumbnail!: string;
   public images?: string[];
   public size!: string;
@@ -61,13 +54,11 @@ class Artwork
   public printNumber?: string;
   public inventoryNumber?: string;
   public status!: ArtworkStatus;
-  public price?: number;
+  public price?: number | null;
   public location?: string;
   public notes?: string;
-  public sold!: boolean;
   public artistId!: number;
   public categoryId?: string;
-  public tags?: string[];
   public isSpotlight!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -88,12 +79,6 @@ Artwork.init(
         notEmpty: true,
         len: [1, 100],
       },
-    },
-
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: "",
     },
 
     thumbnail: {
@@ -159,12 +144,6 @@ Artwork.init(
       defaultValue: "",
     },
 
-    sold: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-
     artistId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -178,12 +157,6 @@ Artwork.init(
       type: DataTypes.STRING(50),
       allowNull: true, // DB level can be null
       defaultValue: "",
-    },
-
-    tags: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      defaultValue: [],
     },
 
     isSpotlight: {
@@ -211,7 +184,6 @@ Artwork.init(
     timestamps: true,
     indexes: [
       { fields: ["artistId"] },
-      { fields: ["sold"] },
       { fields: ["categoryId"] },
       { type: "FULLTEXT", fields: ["title", "description"] },
     ],

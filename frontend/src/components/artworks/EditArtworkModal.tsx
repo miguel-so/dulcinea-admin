@@ -143,7 +143,17 @@ const EditArtworkModal = ({
 
   // --- Required fields validation ---
   const isThumbnailValid = thumbnail !== null || existingThumbnail !== null;
-  const isSubmitDisabled = !title || !category || !price || !isThumbnailValid;
+  const isSubmitDisabled =
+    !title ||
+    !category ||
+    !size ||
+    !media ||
+    !printNumber ||
+    !inventoryNumber ||
+    !status ||
+    !location ||
+    !notes ||
+    !isThumbnailValid;
 
   return (
     <DulcineaModal
@@ -195,7 +205,7 @@ const EditArtworkModal = ({
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel color="gray.600">Size</FormLabel>
               <DulcineaInput
                 placeholder="Enter size"
@@ -204,7 +214,7 @@ const EditArtworkModal = ({
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel color="gray.600">Media</FormLabel>
               <DulcineaInput
                 placeholder="Enter media"
@@ -213,7 +223,7 @@ const EditArtworkModal = ({
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel color="gray.600">Print Number</FormLabel>
               <DulcineaInput
                 placeholder="Enter print number"
@@ -222,17 +232,7 @@ const EditArtworkModal = ({
               />
             </FormControl>
 
-            <FormControl>
-              <FormLabel color="gray.600">Inventory Number</FormLabel>
-              <DulcineaInput
-                placeholder="Enter inventory number"
-                type="number"
-                value={inventoryNumber}
-                onChange={(e) => setInventoryNumber(e.target.value)}
-              />
-            </FormControl>
-
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel color="gray.600">Status</FormLabel>
               <DulcineaSelect
                 placeholder="Select status"
@@ -245,16 +245,6 @@ const EditArtworkModal = ({
             </FormControl>
 
             <FormControl isRequired>
-              <FormLabel color="gray.600">Price</FormLabel>
-              <DulcineaInput
-                placeholder="Enter price"
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </FormControl>
-
-            <FormControl>
               <FormLabel color="gray.600">Location</FormLabel>
               <DulcineaInput
                 placeholder="Enter location"
@@ -264,19 +254,39 @@ const EditArtworkModal = ({
             </FormControl>
 
             <FormControl>
-              <FormLabel color="gray.600">Reflective Notes</FormLabel>
-              <DulcineaTextarea
-                placeholder="Enter notes"
-                rows={5}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+              <FormLabel color="gray.600">Price</FormLabel>
+              <DulcineaInput
+                placeholder="Enter price"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
 
+          <FormControl isRequired>
+            <FormLabel color="gray.600">Inventory Number</FormLabel>
+            <DulcineaInput
+              placeholder="Enter inventory number"
+              type="text"
+              value={inventoryNumber}
+              onChange={(e) => setInventoryNumber(e.target.value)}
+            />
+          </FormControl>
+
+          <FormControl isRequired>
+            <FormLabel color="gray.600">Reflective Notes</FormLabel>
+            <DulcineaTextarea
+              placeholder="Enter notes"
+              rows={5}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </FormControl>
+
           <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
             <FormControl isRequired>
-              <FormLabel color="gray.600">Image (Thumbnail)</FormLabel>
+              <FormLabel color="gray.600">Main Image (Thumbnail)</FormLabel>
               <DulcineaImageDragDrop
                 onFileSelect={handleThumbnailSelect}
                 defaultImageUrl={existingThumbnail || undefined}
@@ -285,7 +295,7 @@ const EditArtworkModal = ({
             </FormControl>
 
             <FormControl>
-              <FormLabel color="gray.600">Artwork Images</FormLabel>
+              <FormLabel color="gray.600">Additional Images</FormLabel>
               <DulcineaImageGalleryDragDrop
                 images={images}
                 onChange={setImages}

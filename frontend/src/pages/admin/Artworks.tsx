@@ -14,6 +14,7 @@ import ThumbnailPreview from "../../components/common/ThumbnailPreview";
 import EditArtworkModal from "../../components/artworks/EditArtworkModal";
 import { ArtworkStatus } from "../../lib/constants/artwork.constants";
 import { useAuth } from "../../lib/contexts/AuthContext";
+import DulcineaSelect from "../../components/common/DulcineaSelect";
 
 const {
   createArtwork: createArtworkUrl,
@@ -21,6 +22,13 @@ const {
   editArtwork: editArtworkUrl,
   deleteArtwork: deleteArtworkUrl,
 } = urlConstants.artworks;
+
+const statusOptions: SelectOption[] = Object.values(ArtworkStatus).map(
+  (status) => ({
+    label: status,
+    value: status,
+  })
+);
 
 const Artworks = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
@@ -30,6 +38,8 @@ const Artworks = () => {
   const [pageSize, setPageSize] = useState<number>(5);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork>();
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [searchStatus, setSearchStatus] = useState<ArtworkStatus | null>(null);
 
   const { user } = useAuth();
 
@@ -40,6 +50,10 @@ const Artworks = () => {
   const { sendRequest: createArtwork } = useApi<any>();
   const { sendRequest: editArtwork } = useApi<any>();
   const { sendRequest: deleteArtwork } = useApi<any>();
+
+  const selectedStatusOption = searchStatus
+    ? { label: searchStatus, value: searchStatus }
+    : null;
 
   const ARTWORK_COLUMNS = [
     {
@@ -123,7 +137,7 @@ const Artworks = () => {
           status: "success",
         });
 
-        fetchArtworks(); // refresh list
+        fetchArtworks(searchKeyword, searchStatus); // refresh list
       },
       command: ApiCommand.PUT,
       url: editArtworkUrl(row.id),
@@ -133,7 +147,10 @@ const Artworks = () => {
     });
   };
 
-  const fetchArtworks = () => {
+  const fetchArtworks = (
+    searchValue = "",
+    searchStatus: ArtworkStatus | null = null
+  ) => {
     getArtworks({
       callback: (data: GetArtworksResopnse | null, error: string | null) => {
         if (error) {
@@ -154,12 +171,14 @@ const Artworks = () => {
       options: {
         page: currentPage,
         limit: pageSize,
+        searchKeyword: searchValue,
+        searchStatus,
       },
     });
   };
 
   useEffect(() => {
-    fetchArtworks();
+    fetchArtworks(searchKeyword, searchStatus);
   }, [currentPage, pageSize]);
 
   const handlePageSizeChange = (size: number) => {
@@ -232,7 +251,7 @@ const Artworks = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchArtworks();
+          fetchArtworks(searchKeyword, searchStatus);
         },
         command: ApiCommand.PUT,
         url: editArtworkUrl(selectedArtwork?.id || ""),
@@ -255,7 +274,7 @@ const Artworks = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchArtworks();
+          fetchArtworks(searchKeyword, searchStatus);
         },
         command: ApiCommand.POST,
         url: createArtworkUrl,
@@ -280,7 +299,7 @@ const Artworks = () => {
           description: "Artwork deleted successfully",
           status: "success",
         });
-        fetchArtworks();
+        fetchArtworks(searchKeyword, searchStatus);
       },
       command: ApiCommand.DELETE,
       url: deleteArtworkUrl(artworkId),
@@ -292,6 +311,11 @@ const Artworks = () => {
     setIsOpenModal(true);
   };
 
+  const onSearch = (value: string) => {
+    setSearchKeyword(value);
+    fetchArtworks(value, searchStatus);
+  };
+
   return (
     <Page>
       <Flex
@@ -301,12 +325,33 @@ const Artworks = () => {
         gap={4}
         flexWrap="wrap"
       >
-        <Box flex="1" maxW="400px">
-          {/* <DulcineaInput
-            placeholder='Search'
-            rightIcon={<MdSearch color='gray.500' />}
-          /> */}
-        </Box>
+        <Flex
+          flex="1"
+          maxWidth="500px"
+          justifyContent="space-between"
+          alignItems="center"
+          gap="40px"
+        >
+          <Flex flexDirection="column">
+            <DulcineaInput
+              placeholder="Title and Notes search..."
+              rightIcon={<MdSearch color="gray.500" />}
+              value={searchKeyword}
+              onChange={(e) => onSearch(e.target.value)}
+            />
+          </Flex>
+          <Box width="200px">
+            <DulcineaSelect
+              options={statusOptions}
+              value={selectedStatusOption}
+              onChange={(newValue) => {
+                setSearchStatus(newValue?.value as ArtworkStatus);
+                fetchArtworks(searchKeyword, newValue?.value as ArtworkStatus);
+              }}
+              placeholder="Status search"
+            />
+          </Box>
+        </Flex>
         <Button
           colorScheme="teal"
           px={6}

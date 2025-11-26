@@ -1,4 +1,4 @@
-import Select, { ActionMeta, SingleValue } from 'react-select';
+import Select, { ActionMeta, SingleValue } from "react-select";
 
 interface DulcineaSelectProps {
   isDisabled?: boolean;
@@ -8,7 +8,11 @@ interface DulcineaSelectProps {
   placeholder?: string;
   options: SelectOption[];
   defaultValue?: SelectOption;
-  onChange: (newValue: SingleValue<SelectOption>, actionMeta: ActionMeta<SelectOption>) => void;
+  value?: SelectOption | null;
+  onChange: (
+    newValue: SingleValue<SelectOption>,
+    actionMeta: ActionMeta<SelectOption>
+  ) => void;
 }
 
 const DulcineaSelect: React.FC<DulcineaSelectProps> = ({
@@ -16,8 +20,9 @@ const DulcineaSelect: React.FC<DulcineaSelectProps> = ({
   isLoading = false,
   isClearable = true,
   isSearchable = true,
-  placeholder = '',
+  placeholder = "Search...",
   defaultValue,
+  value,
   options,
   onChange,
   ...props
@@ -30,7 +35,9 @@ const DulcineaSelect: React.FC<DulcineaSelectProps> = ({
       isSearchable={isSearchable}
       defaultValue={defaultValue}
       options={options}
+      placeholder={placeholder}
       onChange={onChange}
+      value={value}
     />
   );
 };

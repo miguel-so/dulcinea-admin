@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { sendEmail } from '../utils/sendEmail';
-import { Artwork, User } from '../models';
+import { Request, Response } from "express";
+import { sendEmail } from "../utils/sendEmail";
+import { Artwork, User } from "../models";
 
 interface ContactForm {
   name: string;
@@ -17,14 +17,18 @@ export const sendContactMessage = async (req: Request, res: Response) => {
   try {
     const { name, email, phone, message, artworkId }: ContactForm = req.body;
 
-    let artistEmail = '';
-    let artistName = '';
-    let artworkTitle = '';
+    let artistEmail = "";
+    let artistName = "";
+    let artworkTitle = "";
+    let artworkInventoryNumber = "";
+    let artworkCategoryId = "";
     // Get artwork information if provided
     if (artworkId) {
       const artwork = await Artwork.findByPk(artworkId);
       if (artwork) {
         artworkTitle = artwork.title;
+        artworkInventoryNumber = artwork.inventoryNumber ?? "";
+        artworkCategoryId = artwork.categoryId ?? "";
         const artist = await User.findByPk(artwork.artistId);
         if (artist) {
           artistEmail = (artist as any).email;
@@ -36,7 +40,7 @@ export const sendContactMessage = async (req: Request, res: Response) => {
     if (!artistEmail) {
       return res.status(404).json({
         success: false,
-        message: 'Artist not found',
+        message: "Artist not found",
       });
     }
 
@@ -45,17 +49,22 @@ export const sendContactMessage = async (req: Request, res: Response) => {
 Hello ${artistName},
 
 You have received a new inquiry about your artwork${
-      artworkTitle ? ` "${artworkTitle}"` : ''
+      artworkTitle ? ` "${artworkTitle}"` : ""
     }.
 
+Inventory Number: ${artworkInventoryNumber}
+Artwork: ${
+      process.env.REACT_APP_API_URL
+    }/details.html?id=${artworkId}&category=${artworkCategoryId}
+
 From: ${name} (${email})
-Phone: ${phone || 'Not provided'}
+Phone: ${phone || "Not provided"}
 
 Message:
 ${message}
 
 Please respond directly to ${email} or call ${
-      phone || 'them'
+      phone || "them"
     } to continue the conversation.
 
 Best regards,
@@ -67,11 +76,11 @@ Dulcinea-Art Team
 Hello ${name},
 
 Thank you for your interest in the artwork${
-      artworkTitle ? ` "${artworkTitle}"` : ''
-    } by ${artistName}.
+      artworkTitle ? ` "${artworkTitle}"` : ""
+    }.
 
 Your message has been sent to the artist, and they will respond directly to you at ${email} or via phone at ${
-      phone || 'Not provided'
+      phone || "Not provided"
     }.
 
 Your message:
@@ -99,13 +108,13 @@ Dulcinea-Art Team
 
     res.json({
       success: true,
-      message: 'Message sent successfully',
+      message: "Message sent successfully",
     });
   } catch (error: any) {
-    console.error('Contact form error:', error);
+    console.error("Contact form error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to send message. Please try again later.',
+      message: "Failed to send message. Please try again later.",
     });
   }
 };
