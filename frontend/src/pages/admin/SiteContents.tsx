@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Flex, IconButton, Button } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Button, Tooltip, Text } from "@chakra-ui/react";
 import { MdDelete, MdEdit } from "react-icons/md";
 
 import Page from "../../components/common/Page";
@@ -11,6 +11,7 @@ import EditCategoryModal from "../../components/categories/EditCategoryModal";
 import DulcineaTable from "../../components/common/DulcineaTable";
 import DulcineaPagination from "../../components/common/DulcineaPagination";
 import EditSiteContentModal from "../../components/site-contents/EditSiteContentModal";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 
 const SITE_CONTENTS_COLUMNS = [
   {
@@ -86,7 +87,7 @@ const SiteContents = () => {
     setCurrentPage(1);
   };
 
-  const onSaveSiteContent = (name: string, description: string) => {
+  const onSaveSiteContent = (item: string, value: string) => {
     if (selectedSiteContent) {
       editSiteContent({
         callback: (_data, error: string | null) => {
@@ -109,8 +110,8 @@ const SiteContents = () => {
         command: ApiCommand.PUT,
         url: editSiteContentUrl(selectedSiteContent.id as string),
         options: {
-          name,
-          description,
+          item,
+          value,
         },
       });
     } else {
@@ -135,8 +136,8 @@ const SiteContents = () => {
         command: ApiCommand.POST,
         url: createSiteContentUrl,
         options: {
-          name,
-          description,
+          item,
+          value,
         },
       });
     }
@@ -179,11 +180,28 @@ const SiteContents = () => {
         gap={4}
         flexWrap="wrap"
       >
-        <Box flex="1" maxW="400px">
-          {/* <DulcineaInput
-            placeholder='Search'
-            rightIcon={<MdSearch color='gray.500' />}
-          /> */}
+        <Box flex="1" paddingLeft="20px">
+          <Tooltip
+            label="These 4 items keyword are essential for site functionality. Please avoid modifying or deleting these items keyword unless necessary, create it if any of them is missing: Artist Bio, Artist Display Name, Artist Instagram Link, Welcome Message."
+            placement="right"
+            hasArrow
+            bg="teal.500"
+            color="white"
+            fontSize="sm"
+            p={3}
+            borderRadius="md"
+          >
+            <Flex
+              alignItems="center"
+              cursor="pointer"
+              width="fit-content"
+              _hover={{ color: "teal.500" }}
+              gap="10px"
+            >
+              <InfoOutlineIcon color="teal" boxSize={5} />
+              <Text color="teal">Reminder</Text>
+            </Flex>
+          </Tooltip>
         </Box>
         <Button
           colorScheme="teal"

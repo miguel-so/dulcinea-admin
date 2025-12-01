@@ -30,6 +30,26 @@
     "#features05-39 [data-spotlight-grid]"
   );
 
+  const welcomeMessageElement = document.querySelector(
+    "#slider01-34 .item-text"
+  );
+
+  const renderWelcomeMessage = (siteContents) => {
+    if (!welcomeMessageElement) return;
+
+    const welcomeItem = Array.isArray(siteContents)
+      ? siteContents.find((item) => item.item === "Welcome Message")
+      : null;
+
+    if (!welcomeItem) {
+      welcomeMessageElement.textContent = "Welcome to Dulcinea Art!";
+      return;
+    }
+
+    welcomeMessageElement.textContent =
+      welcomeItem.value || "Welcome to Dulcinea Art!";
+  };
+
   const toggleSectionState = (section, isEmpty, message) => {
     if (!section) return;
     const noticeSelector = "[data-empty-notice]";
@@ -324,21 +344,27 @@
 
   const initialiseLandingPage = async () => {
     try {
-      const [artworksResponse, categoriesResponse] = await Promise.all([
-        fetchJson("/api/artworks", {
-          query: { limit: 10, isRandom: true },
-        }),
-        fetchJson("/api/categories", {
-          query: { all: true },
-        }),
-      ]);
+      const [artworksResponse, categoriesResponse, siteContentsResponse] =
+        await Promise.all([
+          fetchJson("/api/artworks", {
+            query: { limit: 10, isRandom: true },
+          }),
+          fetchJson("/api/categories", {
+            query: { all: true },
+          }),
+          fetchJson("/api/site-contents", {
+            query: { all: true },
+          }),
+        ]);
 
       const artworks = artworksResponse?.artworks || [];
       const categories = categoriesResponse?.categories || [];
+      const siteContents = siteContentsResponse?.siteContents || [];
 
       renderHero(artworks);
       renderCategories(categories);
       renderSpotlight(artworks);
+      renderWelcomeMessage(siteContents);
     } catch (error) {
       console.error("Failed to initialise landing page", error);
       toggleSectionState(

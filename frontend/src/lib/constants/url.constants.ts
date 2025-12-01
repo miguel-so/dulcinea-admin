@@ -27,8 +27,8 @@ const urlConstants = {
   siteContents: {
     getSiteContents: "/api/site-contents",
     createSiteContent: "/api/site-contents",
-    editSiteContent: (id: string) => `/api/te-contents/${id}`,
-    deleteSiteContent: (id: string) => `/api/te-contents/${id}`,
+    editSiteContent: (id: string) => `/api/site-contents/${id}`,
+    deleteSiteContent: (id: string) => `/api/site-contents/${id}`,
   },
   contact: "/api/contact",
 };

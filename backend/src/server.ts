@@ -14,6 +14,7 @@ import authRoutes from "./routes/auth";
 import artworkRoutes from "./routes/artworks";
 import contactRoutes from "./routes/contact";
 import categoryRoutes from "./routes/categories";
+import siteContentRoutes from "./routes/siteContents";
 import adminRoutes from "./routes/admin";
 // import artistRoutes from './routes/artist';
 
@@ -53,6 +54,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/artworks", artworkRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/site-contents", siteContentRoutes);
 app.use("/api/admin", adminRoutes);
 // app.use('/api/artist', artistRoutes);
 
