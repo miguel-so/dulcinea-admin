@@ -10,50 +10,51 @@ import urlConstants from "../../lib/constants/url.constants";
 import EditCategoryModal from "../../components/categories/EditCategoryModal";
 import DulcineaTable from "../../components/common/DulcineaTable";
 import DulcineaPagination from "../../components/common/DulcineaPagination";
+import EditSiteContentModal from "../../components/site-contents/EditSiteContentModal";
 
-const CATEGORY_COLUMNS = [
+const SITE_CONTENTS_COLUMNS = [
   {
-    key: "name",
-    label: "Name",
+    key: "item",
+    label: "Item",
   },
   {
-    key: "description",
-    label: "Description",
+    key: "value",
+    label: "Value",
     render: (value: string) =>
       value && value.length > 50 ? value.slice(0, 50) + "..." : value,
   },
 ];
 
 const {
-  createCategory: createCategoryUrl,
-  getCategories: getCategoriesUrl,
-  editCategory: editCategoryUrl,
-  deleteCategory: deleteCategoryUrl,
-} = urlConstants.categories;
+  createSiteContent: createSiteContentUrl,
+  getSiteContents: getSiteContentsUrl,
+  editSiteContent: editSiteContentUrl,
+  deleteSiteContent: deleteSiteContentUrl,
+} = urlConstants.siteContents;
 
-const Categories = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+const SiteContents = () => {
+  const [siteContents, setSiteContents] = useState<SiteContent[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category>();
+  const [selectedSiteContent, setSelectedSiteContent] = useState<SiteContent>();
 
   const showToast = useToastNotification();
 
-  const { loading: isGetCategoriesLoading, sendRequest: getCategories } =
-    useApi<GetCategoriesResopnse>();
-  const { loading: isCreateCategoryLoading, sendRequest: createCategory } =
-    useApi<any>();
-  const { loading: isEditCategoryLoading, sendRequest: editCategory } =
-    useApi<any>();
-  const { loading: isDeleteCategoryLoading, sendRequest: deleteCategory } =
-    useApi<any>();
+  const { loading: isGetSiteContentsLoading, sendRequest: getSiteContents } =
+    useApi<GetSiteContentsResopnse>();
+  const { sendRequest: createSiteContent } = useApi<any>();
+  const { sendRequest: editSiteContent } = useApi<any>();
+  const { sendRequest: deleteSiteContent } = useApi<any>();
 
-  const fetchCategories = () => {
-    getCategories({
-      callback: (data: GetCategoriesResopnse | null, error: string | null) => {
+  const fetchSiteContents = () => {
+    getSiteContents({
+      callback: (
+        data: GetSiteContentsResopnse | null,
+        error: string | null
+      ) => {
         if (error) {
           showToast({
             title: "Failed",
@@ -63,12 +64,12 @@ const Categories = () => {
           return;
         }
         if (!data) return null;
-        setCategories(data.categories);
+        setSiteContents(data.siteContents);
         setTotalPages(data.pagination.totalPages);
         setTotalCount(data.pagination.totalCount);
       },
       command: ApiCommand.GET,
-      url: getCategoriesUrl,
+      url: getSiteContentsUrl,
       options: {
         page: currentPage,
         limit: pageSize,
@@ -77,7 +78,7 @@ const Categories = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchSiteContents();
   }, [currentPage, pageSize]);
 
   const handlePageSizeChange = (size: number) => {
@@ -85,9 +86,9 @@ const Categories = () => {
     setCurrentPage(1);
   };
 
-  const onSaveCategory = (name: string, description: string) => {
-    if (selectedCategory) {
-      editCategory({
+  const onSaveSiteContent = (name: string, description: string) => {
+    if (selectedSiteContent) {
+      editSiteContent({
         callback: (_data, error: string | null) => {
           if (error) {
             showToast({
@@ -99,21 +100,21 @@ const Categories = () => {
           }
           showToast({
             title: "Success",
-            description: "Category updated successfully",
+            description: "Site Content updated successfully",
             status: "success",
           });
           setIsOpenModal(false);
-          fetchCategories();
+          fetchSiteContents();
         },
         command: ApiCommand.PUT,
-        url: editCategoryUrl(selectedCategory.id as string),
+        url: editSiteContentUrl(selectedSiteContent.id as string),
         options: {
           name,
           description,
         },
       });
     } else {
-      createCategory({
+      createSiteContent({
         callback: (_data, error: string | null) => {
           if (error) {
             showToast({
@@ -125,14 +126,14 @@ const Categories = () => {
           }
           showToast({
             title: "Success",
-            description: "Category created successfully",
+            description: "Site Content created successfully",
             status: "success",
           });
           setIsOpenModal(false);
-          fetchCategories();
+          fetchSiteContents();
         },
         command: ApiCommand.POST,
-        url: createCategoryUrl,
+        url: createSiteContentUrl,
         options: {
           name,
           description,
@@ -141,8 +142,8 @@ const Categories = () => {
     }
   };
 
-  const onDeleteCategory = (categoryId: string) => {
-    deleteCategory({
+  const onDeleteSiteContent = (siteContentId: string) => {
+    deleteSiteContent({
       callback: (_data, error: string | null) => {
         if (error) {
           showToast({
@@ -154,18 +155,18 @@ const Categories = () => {
         }
         showToast({
           title: "Success",
-          description: "Category deleted successfully",
+          description: "Site Content deleted successfully",
           status: "success",
         });
-        fetchCategories();
+        fetchSiteContents();
       },
       command: ApiCommand.DELETE,
-      url: deleteCategoryUrl(categoryId),
+      url: deleteSiteContentUrl(siteContentId),
     });
   };
 
-  const onEditCategory = (categoryId: string) => {
-    setSelectedCategory(categories.find(({ id }) => id === categoryId));
+  const onEditSiteContent = (siteContentId: string) => {
+    setSelectedSiteContent(siteContents.find(({ id }) => id === siteContentId));
     setIsOpenModal(true);
   };
 
@@ -192,11 +193,11 @@ const Categories = () => {
           fontWeight="bold"
           _hover={{ bg: "teal.300" }}
           onClick={() => {
-            setSelectedCategory(undefined);
+            setSelectedSiteContent(undefined);
             setIsOpenModal(true);
           }}
         >
-          Create Category
+          Create Site Content
         </Button>
       </Flex>
 
@@ -207,27 +208,27 @@ const Categories = () => {
           height="calc(100vh - 275px)"
         >
           <DulcineaTable
-            columns={CATEGORY_COLUMNS}
-            data={categories}
-            loading={isGetCategoriesLoading}
+            columns={SITE_CONTENTS_COLUMNS}
+            data={siteContents}
+            loading={isGetSiteContentsLoading}
             actions={(row) => (
               <>
                 <IconButton
-                  aria-label="Edit Category"
+                  aria-label="Edit Site Content"
                   icon={<MdEdit />}
                   variant="outline"
                   colorScheme="teal"
                   size="sm"
                   marginRight={4}
-                  onClick={() => onEditCategory(row.id)}
+                  onClick={() => onEditSiteContent(row.id)}
                 />
                 <IconButton
-                  aria-label="Delete Category"
+                  aria-label="Delete Site Content"
                   icon={<MdDelete />}
                   variant="outline"
                   colorScheme="red"
                   size="sm"
-                  onClick={() => onDeleteCategory(row.id)}
+                  onClick={() => onDeleteSiteContent(row.id)}
                 />
               </>
             )}
@@ -244,14 +245,14 @@ const Categories = () => {
         />
       </Flex>
 
-      <EditCategoryModal
+      <EditSiteContentModal
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
-        onSubmit={onSaveCategory}
-        selectedCategory={selectedCategory}
+        onSubmit={onSaveSiteContent}
+        selectedSiteContent={selectedSiteContent}
       />
     </Page>
   );
 };
 
-export default Categories;
+export default SiteContents;

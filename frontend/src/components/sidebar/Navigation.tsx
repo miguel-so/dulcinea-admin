@@ -1,6 +1,11 @@
 import { List, ListItem } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
-import { MdOutlinePeople, MdOutlineCategory, MdPalette } from "react-icons/md";
+import {
+  MdOutlinePeople,
+  MdOutlineCategory,
+  MdPalette,
+  MdSettings,
+} from "react-icons/md";
 
 import { NavItem } from "./NavItem";
 import { Path } from "../../lib/constants/path.constants";
@@ -25,6 +30,12 @@ const items: NavbarItem[] = [
     icon: MdPalette,
     path: Path.ARTWORKS,
   },
+  {
+    type: "link",
+    label: "Site Contents",
+    icon: MdSettings,
+    path: Path.SITE_CONTENTS,
+  },
 ];
 
 interface NavigationProps {
@@ -42,7 +53,11 @@ export const Navigation = ({ collapse }: NavigationProps) => {
 
     // Assuming role is a string ('artist' or 'admin'), adjust if numeric
     if (user.role === "artist") {
-      return item.label !== "Users" && item.label !== "Categories";
+      return (
+        item.label !== "Users" &&
+        item.label !== "Categories" &&
+        item.label !== "Site Contents"
+      );
     }
 
     return true; // admin sees everything

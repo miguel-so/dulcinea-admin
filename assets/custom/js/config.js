@@ -1,4 +1,5 @@
 (() => {
+  // const DEFAULT_API_URL = "http://localhost:5000";
   const DEFAULT_API_URL = "https://dev.dulcinea-art.com";
 
   const fromWindow =

@@ -12,4 +12,5 @@ export enum Path {
   USERS = "/users",
   CATEGORIES = "/categories",
   ARTWORKS = "/artworks",
+  SITE_CONTENTS = "/site-contents",
 }
