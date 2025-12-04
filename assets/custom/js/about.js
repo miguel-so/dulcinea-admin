@@ -1,7 +1,7 @@
 (() => {
-  const { fetchJson } = window.DulcineaUtils || {};
+  const { fetchJson, resolveImageUrl } = window.DulcineaUtils || {};
 
-  if (!fetchJson) {
+  if (!fetchJson || !resolveImageUrl) {
     console.error("Dulcinea utilities missing — aborting about page init.");
     return;
   }
@@ -10,35 +10,77 @@
   const nameElement = document.getElementById("artist-name");
   const bioElement = document.getElementById("artist-bio");
   const instaElement = document.getElementById("artist-instagram");
+  const galleryContainer = document.querySelector(".gallery01 .row");
 
   const loadArtistInfo = async () => {
     try {
-      const response = await fetchJson("/api/site-contents", {
+      // Fetch site contents
+      const siteContentsResponse = await fetchJson("/api/site-contents", {
+        query: { all: true },
+      });
+      const categoriesResponse = await fetchJson("/api/categories", {
         query: { all: true },
       });
 
-      const siteContents = response?.siteContents || [];
+      const categories = categoriesResponse?.categories || [];
+      const artistBioCategory = categories.find(
+        (cat) => cat.name === "Artist-Bio-Pics"
+      );
 
+      let artistBioArtworks = [];
+      if (artistBioCategory) {
+        const artistBioArtworksResponse = await fetchJson(
+          "/api/artworks?category=" + artistBioCategory.id,
+          { query: { all: true } }
+        );
+        artistBioArtworks = artistBioArtworksResponse?.artworks || [];
+      }
+
+      const siteContents = siteContentsResponse?.siteContents || [];
       const getValue = (key) =>
         siteContents.find((i) => i.item === key)?.value || "";
 
-      // Extract fields
-      const artistName = getValue("Artist Display Name");
-      const artistBio = getValue("Artist Bio");
-      const instagramLink = getValue("Artist Instagram Link");
-      console.log("artistName", artistName);
-      console.log("artistBio", artistBio);
-      console.log("instagramLink", instagramLink);
-
       // Update page
-      if (nameElement) nameElement.textContent = artistName || "Artist";
+      if (nameElement)
+        nameElement.textContent = getValue("Artist Display Name") || "Artist";
       if (bioElement)
-        bioElement.textContent =
-          artistBio || "Biography information is coming soon.";
+        bioElement.innerHTML = (
+          getValue("Artist Bio") || "Biography information is coming soon."
+        ).replace(/\n/g, "<br>");
       if (instaElement) {
-        instaElement.href = instagramLink || "#";
-        instaElement.textContent =
-          instagramLink || "Instagram link not available";
+        const instaLink = getValue("Artist Instagram Link");
+        instaElement.href = instaLink || "#";
+        instaElement.textContent = instaLink
+          ? "Instagram"
+          : "Instagram link not available";
+      }
+
+      // Populate gallery dynamically
+      if (galleryContainer && artistBioArtworks.length) {
+        galleryContainer.innerHTML = ""; // clear existing items
+        artistBioArtworks.forEach((artwork) => {
+          const col = document.createElement("div");
+          col.className = "item features-image col-12 col-lg-2 col-md-6";
+
+          const wrapper = document.createElement("div");
+          wrapper.className = "item-wrapper";
+
+          const link = document.createElement("a");
+          link.href = "#"; // optionally link to artwork detail page
+
+          const imgDiv = document.createElement("div");
+          imgDiv.className = "item-img";
+
+          const img = document.createElement("img");
+          img.src = resolveImageUrl(artwork.thumbnail);
+          img.alt = artwork.title || "Artist Artwork";
+
+          imgDiv.appendChild(img);
+          link.appendChild(imgDiv);
+          wrapper.appendChild(link);
+          col.appendChild(wrapper);
+          galleryContainer.appendChild(col);
+        });
       }
     } catch (err) {
       console.error("Failed loading artist info:", err);

@@ -359,7 +359,14 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
         if (field === "isSpotlight" && req.user!.role !== "super_admin") {
           return; // skip
         }
-        payload[field] = req.body[field];
+        let value: any = req.body[field];
+
+        // Convert empty string to null for numeric fields
+        if (field === "price" && value === "") {
+          value = null;
+        }
+
+        payload[field] = value;
       }
     });
 

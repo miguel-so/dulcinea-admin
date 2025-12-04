@@ -69,7 +69,6 @@
   };
 
   const buildCard = (artwork, { isFavorite }) => {
-    console.log("artwork", artwork);
     const item = document.createElement("div");
     item.className = "item features-image col-12 col-md-6 col-lg-3";
 
@@ -99,7 +98,11 @@
     // DESCRIPTION – matching static card: display-4 + <p>
     const description = document.createElement("p");
     description.className = "mbr-text mbr-fonts-style display-4";
-    description.textContent = truncate(artwork.notes || "", 50);
+    const notes = artwork.notes || "";
+    const truncatedNotes = truncate(notes, 50);
+
+    // Replace \n with <br>
+    description.innerHTML = truncatedNotes.replace(/\n/g, "<br>");
 
     // FOOTER BUTTONS (correct Mobirise layout)
     const footer = document.createElement("div");
@@ -190,13 +193,10 @@
       categoryTitle.textContent = category?.name || "Untitled Category";
     }
     if (categoryDescription) {
-      console.log("category", category);
       const description =
         (category && category.description) ||
         "Explore the artworks curated for this category.";
-      console.log("description", description);
       categoryDescription.textContent = description;
-      console.log("categoryDescription", categoryDescription);
     }
     // The theme script adds a "hidden" + animation classes to many elements
     // on load. When we hydrate dynamic content the header elements can remain
@@ -216,56 +216,27 @@
         el.style.opacity = "";
       });
     } catch (err) {}
-    // Mark the header as hydrated and add a CSS override so the theme's
-    // animation system can't keep these elements invisible.
+    setDynamicHeaderMinHeight();
+  };
+
+  const setDynamicHeaderMinHeight = () => {
     try {
       const headerSection = document.querySelector("#header01-1l");
       if (headerSection) {
         headerSection.setAttribute("data-hydrated", "true");
 
-        // Add a one-time style override to force visibility for hydrated header
-        if (!document.getElementById("dulcinea-arts-hydrate-style")) {
-          const style = document.createElement("style");
-          style.id = "dulcinea-arts-hydrate-style";
-          style.textContent = `#header01-1l[data-hydrated="true"] .mbr-section-title, #header01-1l[data-hydrated="true"] .mbr-text, #header01-1l[data-hydrated="true"] .mbr-section-btn { visibility: visible !important; opacity: 1 !important; display: block !important; transform: none !important; }`;
-          document.head.appendChild(style);
-        }
-
-        // Safety: some theme logic may re-add hidden classes later — run a
-        // delayed cleanup to remove them again and ensure visibility.
-        setTimeout(() => {
-          try {
-            const hdr = document.querySelector("#header01-1l");
-            if (!hdr) return;
-            hdr
-              .querySelectorAll(
-                ".hidden, .animate__animated, .animate__delay-1s, .animate__fadeIn"
-              )
-              .forEach((n) => {
-                n.classList.remove(
-                  "hidden",
-                  "animate__animated",
-                  "animate__delay-1s",
-                  "animate__fadeIn"
-                );
-                n.style.opacity = "";
-                n.style.display = "";
-              });
-          } catch (e) {
-            /* ignore */
-          }
-        }, 700);
-        // Ensure the header keeps enough vertical space while the rest of the
-        // page is rendered to avoid the visual collapse you described.
-        try {
+        const children = Array.from(headerSection.children);
+        if (children.length) {
+          const maxChildHeight = Math.max(
+            ...children.map((child) => child.getBoundingClientRect().height)
+          );
+          headerSection.style.minHeight = maxChildHeight + 100 + "px";
+        } else {
           headerSection.style.minHeight = "350px";
-        } catch (e) {
-          // ignore
         }
-        // (removed dynamic favorites margin — spacing will be handled via CSS)
       }
-    } catch (err) {
-      // ignore
+    } catch (e) {
+      console.warn("Failed to set dynamic min-height for header", e);
     }
   };
 
@@ -292,6 +263,10 @@
       hydrateCategoryHeader(null);
     }
   };
+
+  window.addEventListener("resize", () => {
+    setDynamicHeaderMinHeight();
+  });
 
   document.addEventListener("DOMContentLoaded", initialise);
 })();

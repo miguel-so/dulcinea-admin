@@ -193,7 +193,8 @@
 
     const description = document.createElement("p");
     description.className = "mbr-text mbr-fonts-style display-4";
-    description.textContent = truncate(category.description || "", 80);
+    const truncatedDescription = truncate(category.description || "", 50);
+    description.innerHTML = truncatedDescription.replace(/\n/g, "<br>");
 
     content.appendChild(title);
     content.appendChild(description);
@@ -370,7 +371,9 @@
       const spotlightArtworks = spotlightArtworksResponse?.artworks || [];
 
       renderHero(artworks);
-      renderCategories(categories);
+      renderCategories(
+        categories.filter((category) => category.name !== "Artist-Bio-Pics")
+      );
       renderSpotlight(spotlightArtworks);
       renderWelcomeMessage(siteContents);
     } catch (error) {

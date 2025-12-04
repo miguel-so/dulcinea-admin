@@ -80,3 +80,13 @@
   height: 500px; /* fixed height */
   object-fit: contain; /* prevent flickering */
 }
+
+.carousel-main-image {
+  width: 100%;
+}
+
+.carousel-label {
+  font-weight: 600;
+  padding-top: 20px;
+  font-size: 20px;
+}

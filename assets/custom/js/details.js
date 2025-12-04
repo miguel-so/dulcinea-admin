@@ -35,6 +35,7 @@
   const galleryContainer = document.querySelector("[data-gallery-container]");
   const galleryIndicators = document.querySelector("[data-gallery-indicators]");
   const galleryCarouselEl = document.querySelector("#artwork-gallery");
+  const carouselLabel = document.querySelector("[data-carousel-label]");
 
   const fieldSelectors = {
     title: document.querySelector("[data-field-title]"),
@@ -193,6 +194,7 @@
         thumb.style.cursor = "pointer";
 
         thumb.addEventListener("click", () => {
+          updateCarouselLabel(imageUrl);
           // Switch main carousel to this index
           const bsCarousel = bootstrap.Carousel.getInstance(carouselContainer);
           if (bsCarousel) bsCarousel.to(index);
@@ -222,7 +224,7 @@
     const activeIndex = Array.from(carouselInner.children).findIndex((item) =>
       item.classList.contains("active")
     );
-
+    updateCarouselLabel(items[activeIndex]?.src);
     items.forEach((img, idx) => {
       img.classList.toggle("active-thumb", idx === activeIndex);
     });
@@ -243,18 +245,15 @@
   const populatePage = (artwork) => {
     const thumbnailUrl = resolveImageUrl(artwork.thumbnail);
     const galleryImages = Array.isArray(artwork.images) ? artwork.images : [];
-    console.log(galleryImages);
 
     const uniqueImages = [
       thumbnailUrl,
       ...galleryImages.map((fileName) => {
-        console.log(`${fileName}`);
         return resolveImageUrl(fileName);
       }),
     ]
       .filter(Boolean)
       .filter((value, index, self) => self.indexOf(value) === index);
-    console.log("uniqueImages", uniqueImages);
 
     if (uniqueImages.length) {
       renderCarousel(uniqueImages);
@@ -267,7 +266,9 @@
 
   const setText = (element, text, fallback = "—") => {
     if (!element) return;
-    element.textContent = text && String(text).trim().length ? text : fallback;
+
+    const content = text && String(text).trim().length ? text : fallback;
+    element.innerHTML = content.replace(/\n/g, "<br>");
   };
 
   const formatStatus = (status) => {
@@ -516,6 +517,17 @@
     }));
   };
 
+  const updateCarouselLabel = (imageSrc) => {
+    if (!carouselLabel || !state.artwork) return;
+
+    const thumbnailUrl = resolveImageUrl(state.artwork.thumbnail);
+    if (imageSrc === thumbnailUrl) {
+      carouselLabel.textContent = "Main image";
+    } else {
+      carouselLabel.textContent = "Alternative image";
+    }
+  };
+
   const initialise = async () => {
     if (!artworkId) {
       setText(titleEl, "Artwork not found");
@@ -533,7 +545,6 @@
       }
 
       const artwork = response.data;
-      console.log("Fetched artwork:", artwork);
       populatePage(artwork);
       state.artwork = artwork;
       state.galleryImages = prepareGalleryImages(artwork);
@@ -546,6 +557,7 @@
       renderGallery();
       configureZoom();
       applyFavoriteState();
+      updateCarouselLabel(state.galleryImages[0].src);
 
       if (favoriteButton) {
         favoriteButton.addEventListener("click", handleFavoriteClick);
