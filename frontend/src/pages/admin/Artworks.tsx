@@ -30,6 +30,11 @@ const statusOptions: SelectOption[] = Object.values(ArtworkStatus).map(
   })
 );
 
+const spotlightOptions: SelectOption[] = [
+  { label: "Spotlight", value: "1" },
+  { label: "Not Spotlight", value: "0" },
+];
+
 const Artworks = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -40,6 +45,9 @@ const Artworks = () => {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork>();
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [searchStatus, setSearchStatus] = useState<ArtworkStatus | null>(null);
+  const [searchSpotlight, setSearchSpotlight] = useState<"1" | "0" | null>(
+    null
+  );
 
   const { user } = useAuth();
 
@@ -53,6 +61,13 @@ const Artworks = () => {
 
   const selectedStatusOption = searchStatus
     ? { label: searchStatus, value: searchStatus }
+    : null;
+
+  const selectedSpotlightOption = searchSpotlight
+    ? {
+        label: searchSpotlight == "1" ? "Spotlight" : "Not Spotlight",
+        value: searchSpotlight,
+      }
     : null;
 
   const ARTWORK_COLUMNS = [
@@ -70,20 +85,8 @@ const Artworks = () => {
       label: "Size",
     },
     {
-      key: "media",
-      label: "Media",
-    },
-    {
       key: "status",
       label: "Status",
-    },
-    {
-      key: "price",
-      label: "Price",
-    },
-    {
-      key: "location",
-      label: "Location",
     },
     {
       key: "notes",
@@ -117,7 +120,6 @@ const Artworks = () => {
   ];
 
   const toogleArtworkSpotlight = (row: any) => {
-    console.log("Toggling spotlight for artwork:", row);
     const newValue = row.isSpotlight == 0 ? 1 : 0; // toggle
 
     editArtwork({
@@ -137,7 +139,7 @@ const Artworks = () => {
           status: "success",
         });
 
-        fetchArtworks(searchKeyword, searchStatus); // refresh list
+        fetchArtworks(searchKeyword, searchStatus, searchSpotlight); // refresh list
       },
       command: ApiCommand.PUT,
       url: editArtworkUrl(row.id),
@@ -149,7 +151,8 @@ const Artworks = () => {
 
   const fetchArtworks = (
     searchValue = "",
-    searchStatus: ArtworkStatus | null = null
+    searchStatus: ArtworkStatus | null = null,
+    searchSpotlight: "1" | "0" | null = null
   ) => {
     getArtworks({
       callback: (data: GetArtworksResopnse | null, error: string | null) => {
@@ -173,12 +176,18 @@ const Artworks = () => {
         limit: pageSize,
         searchKeyword: searchValue,
         searchStatus,
+        isSpotlight:
+          searchSpotlight == "1"
+            ? "true"
+            : searchSpotlight == "0"
+            ? "false"
+            : null,
       },
     });
   };
 
   useEffect(() => {
-    fetchArtworks(searchKeyword, searchStatus);
+    fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
   }, [currentPage, pageSize]);
 
   const handlePageSizeChange = (size: number) => {
@@ -251,7 +260,7 @@ const Artworks = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchArtworks(searchKeyword, searchStatus);
+          fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
         },
         command: ApiCommand.PUT,
         url: editArtworkUrl(selectedArtwork?.id || ""),
@@ -274,7 +283,7 @@ const Artworks = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchArtworks(searchKeyword, searchStatus);
+          fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
         },
         command: ApiCommand.POST,
         url: createArtworkUrl,
@@ -299,7 +308,7 @@ const Artworks = () => {
           description: "Artwork deleted successfully",
           status: "success",
         });
-        fetchArtworks(searchKeyword, searchStatus);
+        fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
       },
       command: ApiCommand.DELETE,
       url: deleteArtworkUrl(artworkId),
@@ -313,7 +322,7 @@ const Artworks = () => {
 
   const onSearch = (value: string) => {
     setSearchKeyword(value);
-    fetchArtworks(value, searchStatus);
+    fetchArtworks(value, searchStatus, searchSpotlight);
   };
 
   return (
@@ -327,7 +336,7 @@ const Artworks = () => {
       >
         <Flex
           flex="1"
-          maxWidth="500px"
+          maxWidth="700px"
           justifyContent="space-between"
           alignItems="center"
           gap="40px"
@@ -346,9 +355,28 @@ const Artworks = () => {
               value={selectedStatusOption}
               onChange={(newValue) => {
                 setSearchStatus(newValue?.value as ArtworkStatus);
-                fetchArtworks(searchKeyword, newValue?.value as ArtworkStatus);
+                fetchArtworks(
+                  searchKeyword,
+                  newValue?.value as ArtworkStatus,
+                  searchSpotlight
+                );
               }}
               placeholder="Status search"
+            />
+          </Box>
+          <Box width="200px">
+            <DulcineaSelect
+              options={spotlightOptions}
+              value={selectedSpotlightOption}
+              onChange={(newValue) => {
+                setSearchSpotlight(newValue?.value as any);
+                fetchArtworks(
+                  searchKeyword,
+                  searchStatus,
+                  newValue?.value as any
+                );
+              }}
+              placeholder="Spotlight search"
             />
           </Box>
         </Flex>

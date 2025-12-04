@@ -4,6 +4,7 @@ import path from "path";
 import { Request, Response } from "express";
 import { Artwork, User } from "../models";
 import { Op, literal } from "sequelize";
+import { ArtworkStatus } from "../utils/types";
 
 interface AuthRequest extends Request {
   user?: any;
@@ -30,6 +31,7 @@ export const getArtworks = async (req: Request, res: Response) => {
   // new query params
   const isRandom = req.query.isRandom === "true";
   const isSpotlight = req.query.isSpotlight === "true";
+  const isNotSpotlight = req.query.isSpotlight === "false";
 
   try {
     // Build filters (same as before)
@@ -54,7 +56,11 @@ export const getArtworks = async (req: Request, res: Response) => {
       whereClause.isSpotlight = true;
     }
 
+    if (isNotSpotlight) {
+      whereClause.isSpotlight = false;
+    }
     if (all && !isRandom) {
+      whereClause.status = { [Op.ne]: ArtworkStatus.SOLD };
       const artworks = await Artwork.findAll({
         where: whereClause,
         include: [

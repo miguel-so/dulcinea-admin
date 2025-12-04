@@ -344,26 +344,34 @@
 
   const initialiseLandingPage = async () => {
     try {
-      const [artworksResponse, categoriesResponse, siteContentsResponse] =
-        await Promise.all([
-          fetchJson("/api/artworks", {
-            query: { limit: 10, isRandom: true },
-          }),
-          fetchJson("/api/categories", {
-            query: { all: true },
-          }),
-          fetchJson("/api/site-contents", {
-            query: { all: true },
-          }),
-        ]);
+      const [
+        artworksResponse,
+        categoriesResponse,
+        siteContentsResponse,
+        spotlightArtworksResponse,
+      ] = await Promise.all([
+        fetchJson("/api/artworks", {
+          query: { limit: 10, isRandom: true },
+        }),
+        fetchJson("/api/categories", {
+          query: { all: true },
+        }),
+        fetchJson("/api/site-contents", {
+          query: { all: true },
+        }),
+        fetchJson("/api/artworks", {
+          query: { isSpotlight: true },
+        }),
+      ]);
 
       const artworks = artworksResponse?.artworks || [];
       const categories = categoriesResponse?.categories || [];
       const siteContents = siteContentsResponse?.siteContents || [];
+      const spotlightArtworks = spotlightArtworksResponse?.artworks || [];
 
       renderHero(artworks);
       renderCategories(categories);
-      renderSpotlight(artworks);
+      renderSpotlight(spotlightArtworks);
       renderWelcomeMessage(siteContents);
     } catch (error) {
       console.error("Failed to initialise landing page", error);

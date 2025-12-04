@@ -2,6 +2,10 @@
   // const DEFAULT_API_URL = "http://localhost:5000";
   const DEFAULT_API_URL = "https://dev.dulcinea-art.com";
 
+  document.addEventListener("contextmenu", function (e) {
+    e.preventDefault();
+  });
+
   const fromWindow =
     typeof window !== "undefined" &&
     window.__ENV__ &&

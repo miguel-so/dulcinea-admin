@@ -96,6 +96,14 @@ export const createCategory = async (req: Request, res: Response) => {
   try {
     const { name, description } = req.body;
 
+    // Validate name length
+    if (!name || name.length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: "Category name cannot exceed 50 characters",
+      });
+    }
+
     // Check if category already exists
     const existingCategory = await Category.findOne({ where: { name } });
     if (existingCategory) {
@@ -183,6 +191,17 @@ export const deleteCategory = async (req: Request, res: Response) => {
       return res.status(404).json({
         success: false,
         message: "Category not found",
+      });
+    }
+
+    // Check if any artwork is using this category
+    const artworkCount = await Artwork.count({ where: { categoryId: id } });
+
+    if (artworkCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete category. Artwork exists using this category.",
+        artworkCount,
       });
     }
 

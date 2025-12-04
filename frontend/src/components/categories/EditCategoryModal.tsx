@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { FormControl, FormLabel, VStack } from '@chakra-ui/react';
+import { useEffect, useState } from "react";
+import { FormControl, FormLabel, VStack } from "@chakra-ui/react";
 
-import DulcineaModal from '../common/DulcineaModal';
-import DulcineaInput from '../common/DulcineaInput';
-import DulcineaTextarea from '../common/DulcineaTextarea';
+import DulcineaModal from "../common/DulcineaModal";
+import DulcineaInput from "../common/DulcineaInput";
+import DulcineaTextarea from "../common/DulcineaTextarea";
 
 interface EditCategoryModalProps {
   selectedCategory?: Category;
@@ -18,12 +18,12 @@ const EditCategoryModal = ({
   onClose,
   onSubmit,
 }: EditCategoryModalProps) => {
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   useEffect(() => {
-    setName(selectedCategory?.name || '');
-    setDescription(selectedCategory?.description || '');
+    setName(selectedCategory?.name || "");
+    setDescription(selectedCategory?.description || "");
   }, [selectedCategory, isOpen]);
 
   return (
@@ -31,23 +31,25 @@ const EditCategoryModal = ({
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={() => onSubmit(name, description)}
-      title={selectedCategory ? 'Edit Category' : 'Create Category'}
+      title={selectedCategory ? "Edit Category" : "Create Category"}
       isSubmitDisabled={!name || !description}
       body={
-        <VStack spacing={4} align='stretch'>
+        <VStack spacing={4} align="stretch">
           <FormControl>
-            <FormLabel color='gray.600'>Category Name</FormLabel>
+            <FormLabel color="gray.600">
+              Category Name (50 characters max)
+            </FormLabel>
             <DulcineaInput
-              placeholder='Enter category name'
+              placeholder="Enter category name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </FormControl>
 
           <FormControl>
-            <FormLabel color='gray.600'>Description</FormLabel>
+            <FormLabel color="gray.600">Description</FormLabel>
             <DulcineaTextarea
-              placeholder='Enter description'
+              placeholder="Enter description"
               rows={5}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
