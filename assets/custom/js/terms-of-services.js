@@ -2,9 +2,7 @@
   const { fetchJson } = window.DulcineaUtils || {};
 
   if (!fetchJson) {
-    console.error(
-      "Dulcinea utilities missing — aborting terms of services init."
-    );
+    console.error("Dulcinea utilities missing — aborting terms of use init.");
     return;
   }
 
@@ -22,14 +20,14 @@
         siteContents.find((i) => i.item === key)?.value || "";
 
       const termsText =
-        getValue("Terms of Services") ||
-        "Terms of Services content will be updated soon.";
+        getValue("Terms of Use") ||
+        "Terms of Use content will be updated soon.";
 
       if (termsElement) {
         termsElement.innerHTML = termsText.replace(/\n/g, "<br>");
       }
     } catch (err) {
-      console.error("Failed loading Terms of Services:", err);
+      console.error("Failed loading Terms of Use:", err);
     }
   };
 

@@ -370,6 +370,7 @@
       const categories = categoriesResponse?.categories || [];
       const siteContents = siteContentsResponse?.siteContents || [];
       const spotlightArtworks = spotlightArtworksResponse?.artworks || [];
+      console.log("artworks", artworks);
 
       renderHero(artworks);
       renderCategories(

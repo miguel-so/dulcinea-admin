@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import { Request, Response } from "express";
-import { Artwork, User } from "../models";
+import { Artwork, Category, User } from "../models";
 import { Op, literal } from "sequelize";
 import { ArtworkStatus } from "../utils/types";
 
@@ -79,7 +79,8 @@ export const getArtworks = async (req: Request, res: Response) => {
     }
 
     if (isRandom) {
-      const options: any = {
+      // Step 1: Fetch artworks normally
+      const artworks = await Artwork.findAll({
         where: whereClause,
         include: [
           {
@@ -88,20 +89,24 @@ export const getArtworks = async (req: Request, res: Response) => {
           },
         ],
         order: literal("RAND()"),
-      };
+        limit:
+          limitQuery && !isNaN(Number(limitQuery))
+            ? Number(limitQuery)
+            : defaultLimit,
+      });
 
-      // If limit was provided, use it, otherwise default to 10 random items.
-      if (limitQuery && !isNaN(Number(limitQuery))) {
-        options.limit = Number(limitQuery);
-      } else {
-        // default fewer items for hero; keep defaultLimit
-        options.limit = defaultLimit;
-      }
+      // Step 2: Load all categories once (faster than calling DB per artwork)
+      const categories = await Category.findAll();
+      const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
 
-      const artworks = await Artwork.findAll(options);
+      // Step 3: Filter artworks by category name
+      const filteredArtworks = artworks.filter((art) => {
+        const catName = categoryMap.get(Number(art.categoryId));
+        return catName !== "Artist-Bio-Pics";
+      });
 
       return res.status(200).json({
-        artworks,
+        artworks: filteredArtworks,
         pagination: null,
       });
     }
