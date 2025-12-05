@@ -196,7 +196,7 @@
       const description =
         (category && category.description) ||
         "Explore the artworks curated for this category.";
-      categoryDescription.textContent = description;
+      categoryDescription.innerHTML = description.replace(/\n/g, "<br>");
     }
     // The theme script adds a "hidden" + animation classes to many elements
     // on load. When we hydrate dynamic content the header elements can remain

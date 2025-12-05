@@ -237,6 +237,13 @@ export const createArtwork = async (req: Request, res: Response) => {
       data: artwork,
     });
   } catch (error: any) {
+    if (error.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.errors.map((err: any) => err.message)[0],
+      });
+    }
+
     console.error("Error creating artwork:", error);
     res.status(500).json({
       success: false,
@@ -382,6 +389,13 @@ export const updateArtwork = async (req: AuthRequest, res: Response) => {
       data: updatedArtwork,
     });
   } catch (error: any) {
+    if (error.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.errors.map((err: any) => err.message)[0],
+      });
+    }
+
     res.status(400).json({
       success: false,
       message: error.message,

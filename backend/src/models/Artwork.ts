@@ -76,8 +76,13 @@ Artwork.init(
       type: DataTypes.STRING(100),
       allowNull: false,
       validate: {
-        notEmpty: true,
-        len: [1, 100],
+        notEmpty: {
+          msg: "Title is required",
+        },
+        len: {
+          args: [1, 100],
+          msg: "Title must be between 1 and 100 characters",
+        },
       },
     },
 
@@ -96,24 +101,48 @@ Artwork.init(
       type: DataTypes.STRING(50),
       allowNull: true, // ✅ made optional
       defaultValue: "",
+      validate: {
+        len: {
+          args: [0, 50],
+          msg: "Size must not exceed 50 characters",
+        },
+      },
     },
 
     media: {
       type: DataTypes.STRING(100),
       allowNull: true,
       defaultValue: "",
+      validate: {
+        len: {
+          args: [0, 100],
+          msg: "Media must not exceed 100 characters",
+        },
+      },
     },
 
     printNumber: {
       type: DataTypes.STRING(50),
       allowNull: true,
       defaultValue: "",
+      validate: {
+        len: {
+          args: [0, 50],
+          msg: "Print number must not exceed 50 characters",
+        },
+      },
     },
 
     inventoryNumber: {
       type: DataTypes.STRING(50),
       allowNull: true,
       defaultValue: "",
+      validate: {
+        len: {
+          args: [0, 50],
+          msg: "Inventory number must not exceed 50 characters",
+        },
+      },
     },
 
     status: {
@@ -136,6 +165,12 @@ Artwork.init(
       type: DataTypes.STRING(255),
       allowNull: true,
       defaultValue: "",
+      validate: {
+        len: {
+          args: [0, 255],
+          msg: "Location must not exceed 255 characters",
+        },
+      },
     },
 
     notes: {

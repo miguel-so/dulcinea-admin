@@ -374,7 +374,7 @@
       renderCategories(
         categories.filter((category) => category.name !== "Artist-Bio-Pics")
       );
-      renderSpotlight(spotlightArtworks);
+      renderSpotlight(spotlightArtworks.filter((art) => art.status !== "Sold"));
       renderWelcomeMessage(siteContents);
     } catch (error) {
       console.error("Failed to initialise landing page", error);
