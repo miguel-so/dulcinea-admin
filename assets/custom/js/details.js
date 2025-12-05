@@ -522,9 +522,9 @@
 
     const thumbnailUrl = resolveImageUrl(state.artwork.thumbnail);
     if (imageSrc === thumbnailUrl) {
-      carouselLabel.textContent = "Main image";
+      carouselLabel.textContent = "Main view";
     } else {
-      carouselLabel.textContent = "Alternative image";
+      carouselLabel.textContent = "Alternative view";
     }
   };
 

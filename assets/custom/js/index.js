@@ -46,8 +46,9 @@
       return;
     }
 
-    welcomeMessageElement.textContent =
-      welcomeItem.value || "Welcome to Dulcinea Art!";
+    welcomeMessageElement.innerHTML = (
+      welcomeItem.value || "Welcome to Dulcinea Art!"
+    ).replace(/\n/g, "<br>");
   };
 
   const toggleSectionState = (section, isEmpty, message) => {
