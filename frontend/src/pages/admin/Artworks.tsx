@@ -156,8 +156,7 @@ const Artworks = () => {
       command: ApiCommand.GET,
       url: getCategoriesUrl,
       options: {
-        page: currentPage,
-        limit: pageSize,
+        all: "true",
       },
     });
   };
