@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Category from "../models/Category";
 import Artwork from "../models/Artwork";
-import { Sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 // @desc    Get all categories
 // @route   GET /api/categories
@@ -14,7 +14,21 @@ export const getAllCategories = async (req: Request, res: Response) => {
   const offset = (page - 1) * limit;
 
   try {
-    let categories = await Category.findAll({
+    let whereClause: any = {};
+
+    if (req.query.searchKeyword) {
+      const keyword = req.query.searchKeyword as string;
+
+      whereClause = {
+        [Op.or]: [
+          { name: { [Op.like]: `%${keyword}%` } },
+          { description: { [Op.like]: `%${keyword}%` } },
+        ],
+      };
+    }
+
+    const categories = await Category.findAll({
+      where: whereClause,
       offset: all ? undefined : offset,
       limit: all ? undefined : limit,
       order: [["name", "ASC"]],

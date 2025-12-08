@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Flex, IconButton, Button, Switch } from "@chakra-ui/react";
 import { MdDelete, MdSearch, MdEdit } from "react-icons/md";
+import { ActionMeta, SingleValue } from "react-select";
 
 import Page from "../../components/common/Page";
 import { ApiCommand } from "../../lib/Api";
@@ -15,6 +16,7 @@ import EditArtworkModal from "../../components/artworks/EditArtworkModal";
 import { ArtworkStatus } from "../../lib/constants/artwork.constants";
 import { useAuth } from "../../lib/contexts/AuthContext";
 import DulcineaSelect from "../../components/common/DulcineaSelect";
+import { categoriesToSelectOptionsMapper } from "../../lib/utils";
 
 const {
   createArtwork: createArtworkUrl,
@@ -22,6 +24,8 @@ const {
   editArtwork: editArtworkUrl,
   deleteArtwork: deleteArtworkUrl,
 } = urlConstants.artworks;
+
+const { getCategories: getCategoriesUrl } = urlConstants.categories;
 
 const statusOptions: SelectOption[] = Object.values(ArtworkStatus).map(
   (status) => ({
@@ -36,6 +40,7 @@ const spotlightOptions: SelectOption[] = [
 ];
 
 const Artworks = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -44,6 +49,7 @@ const Artworks = () => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork>();
   const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [searchCategory, setSearchCategory] = useState<string | null>(null);
   const [searchStatus, setSearchStatus] = useState<ArtworkStatus | null>(null);
   const [searchSpotlight, setSearchSpotlight] = useState<"1" | "0" | null>(
     null
@@ -58,6 +64,18 @@ const Artworks = () => {
   const { sendRequest: createArtwork } = useApi<any>();
   const { sendRequest: editArtwork } = useApi<any>();
   const { sendRequest: deleteArtwork } = useApi<any>();
+
+  const { loading: isGetCategoriesLoading, sendRequest: getCategories } =
+    useApi<GetCategoriesResopnse>();
+
+  const selectedCategoryOption = searchCategory
+    ? categories.find((c) => c.id == searchCategory)
+      ? {
+          label: categories.find((c) => c.id == searchCategory)?.name || "",
+          value: searchCategory,
+        }
+      : null
+    : null;
 
   const selectedStatusOption = searchStatus
     ? { label: searchStatus, value: searchStatus }
@@ -81,8 +99,10 @@ const Artworks = () => {
       render: (value: string) => <ThumbnailPreview imageUrl={value} />,
     },
     {
-      key: "size",
-      label: "Size",
+      key: "categoryId",
+      label: "Category",
+      render: (value: string) =>
+        categories.find((cat) => cat.id == value)?.name,
     },
     {
       key: "status",
@@ -119,6 +139,29 @@ const Artworks = () => {
     },
   ];
 
+  const fetchCategories = () => {
+    getCategories({
+      callback: (data: GetCategoriesResopnse | null, error: string | null) => {
+        if (error) {
+          showToast({
+            title: "Failed",
+            description: error,
+            status: "error",
+          });
+          return;
+        }
+        if (!data) return null;
+        setCategories(data.categories);
+      },
+      command: ApiCommand.GET,
+      url: getCategoriesUrl,
+      options: {
+        page: currentPage,
+        limit: pageSize,
+      },
+    });
+  };
+
   const toogleArtworkSpotlight = (row: any) => {
     const newValue = row.isSpotlight == 0 ? 1 : 0; // toggle
 
@@ -139,7 +182,12 @@ const Artworks = () => {
           status: "success",
         });
 
-        fetchArtworks(searchKeyword, searchStatus, searchSpotlight); // refresh list
+        fetchArtworks(
+          searchKeyword,
+          searchStatus,
+          searchSpotlight,
+          searchCategory
+        ); // refresh list
       },
       command: ApiCommand.PUT,
       url: editArtworkUrl(row.id),
@@ -152,7 +200,8 @@ const Artworks = () => {
   const fetchArtworks = (
     searchValue = "",
     searchStatus: ArtworkStatus | null = null,
-    searchSpotlight: "1" | "0" | null = null
+    searchSpotlight: "1" | "0" | null = null,
+    searchCategory: string | null = null
   ) => {
     getArtworks({
       callback: (data: GetArtworksResopnse | null, error: string | null) => {
@@ -174,6 +223,7 @@ const Artworks = () => {
       options: {
         page: currentPage,
         limit: pageSize,
+        category: searchCategory ? searchCategory : "",
         searchKeyword: searchValue,
         searchStatus,
         isSpotlight:
@@ -187,8 +237,19 @@ const Artworks = () => {
   };
 
   useEffect(() => {
-    fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
-  }, [currentPage, pageSize]);
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!isGetCategoriesLoading) {
+      fetchArtworks(
+        searchKeyword,
+        searchStatus,
+        searchSpotlight,
+        searchCategory
+      );
+    }
+  }, [currentPage, pageSize, isGetCategoriesLoading]);
 
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
@@ -260,7 +321,12 @@ const Artworks = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
+          fetchArtworks(
+            searchKeyword,
+            searchStatus,
+            searchSpotlight,
+            searchCategory
+          );
         },
         command: ApiCommand.PUT,
         url: editArtworkUrl(selectedArtwork?.id || ""),
@@ -283,7 +349,12 @@ const Artworks = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
+          fetchArtworks(
+            searchKeyword,
+            searchStatus,
+            searchSpotlight,
+            searchCategory
+          );
         },
         command: ApiCommand.POST,
         url: createArtworkUrl,
@@ -308,7 +379,12 @@ const Artworks = () => {
           description: "Artwork deleted successfully",
           status: "success",
         });
-        fetchArtworks(searchKeyword, searchStatus, searchSpotlight);
+        fetchArtworks(
+          searchKeyword,
+          searchStatus,
+          searchSpotlight,
+          searchCategory
+        );
       },
       command: ApiCommand.DELETE,
       url: deleteArtworkUrl(artworkId),
@@ -322,7 +398,20 @@ const Artworks = () => {
 
   const onSearch = (value: string) => {
     setSearchKeyword(value);
-    fetchArtworks(value, searchStatus, searchSpotlight);
+    fetchArtworks(value, searchStatus, searchSpotlight, searchCategory);
+  };
+
+  const onChangeCategory = (
+    newValue: SingleValue<SelectOption>,
+    _actionMeta: ActionMeta<SelectOption>
+  ) => {
+    setSearchCategory(newValue?.value || "");
+    fetchArtworks(
+      searchKeyword,
+      searchStatus,
+      searchSpotlight,
+      newValue?.value
+    );
   };
 
   return (
@@ -336,7 +425,7 @@ const Artworks = () => {
       >
         <Flex
           flex="1"
-          maxWidth="700px"
+          maxWidth="900px"
           justifyContent="space-between"
           alignItems="center"
           gap="40px"
@@ -351,6 +440,14 @@ const Artworks = () => {
           </Flex>
           <Box width="200px">
             <DulcineaSelect
+              value={selectedCategoryOption}
+              options={categoriesToSelectOptionsMapper(categories)}
+              onChange={onChangeCategory}
+              placeholder="Category search"
+            />
+          </Box>
+          <Box width="200px">
+            <DulcineaSelect
               options={statusOptions}
               value={selectedStatusOption}
               onChange={(newValue) => {
@@ -358,7 +455,8 @@ const Artworks = () => {
                 fetchArtworks(
                   searchKeyword,
                   newValue?.value as ArtworkStatus,
-                  searchSpotlight
+                  searchSpotlight,
+                  searchCategory
                 );
               }}
               placeholder="Status search"
@@ -373,7 +471,8 @@ const Artworks = () => {
                 fetchArtworks(
                   searchKeyword,
                   searchStatus,
-                  newValue?.value as any
+                  newValue?.value as any,
+                  searchCategory
                 );
               }}
               placeholder="Spotlight search"

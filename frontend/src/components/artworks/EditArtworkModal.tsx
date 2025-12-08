@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ActionMeta, SingleValue } from "react-select";
 import { FormControl, FormLabel, VStack, SimpleGrid } from "@chakra-ui/react";
 
 import DulcineaModal from "../common/DulcineaModal";
@@ -8,7 +9,6 @@ import DulcineaImageDragDrop from "../common/DulcineaImageDragDrop";
 import DulcineaImageGalleryDragDrop from "../common/DulcineaImageGalleryDragDrop";
 import DulcineaSelect from "../common/DulcineaSelect";
 import { ArtworkStatus } from "../../lib/constants/artwork.constants";
-import { ActionMeta, SingleValue } from "react-select";
 import urlConstants from "../../lib/constants/url.constants";
 import useApi from "../../lib/hooks/useApi";
 import { ApiCommand } from "../../lib/Api";

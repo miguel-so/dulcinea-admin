@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Flex, IconButton, Button } from "@chakra-ui/react";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit, MdSearch } from "react-icons/md";
 
 import Page from "../../components/common/Page";
 import { ApiCommand } from "../../lib/Api";
@@ -10,6 +10,7 @@ import urlConstants from "../../lib/constants/url.constants";
 import EditCategoryModal from "../../components/categories/EditCategoryModal";
 import DulcineaTable from "../../components/common/DulcineaTable";
 import DulcineaPagination from "../../components/common/DulcineaPagination";
+import DulcineaInput from "../../components/common/DulcineaInput";
 
 const CATEGORY_COLUMNS = [
   {
@@ -39,6 +40,7 @@ const Categories = () => {
   const [pageSize, setPageSize] = useState<number>(5);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>();
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
 
   const showToast = useToastNotification();
 
@@ -51,7 +53,7 @@ const Categories = () => {
   const { loading: isDeleteCategoryLoading, sendRequest: deleteCategory } =
     useApi<any>();
 
-  const fetchCategories = () => {
+  const fetchCategories = (searchValue: string) => {
     getCategories({
       callback: (data: GetCategoriesResopnse | null, error: string | null) => {
         if (error) {
@@ -72,12 +74,13 @@ const Categories = () => {
       options: {
         page: currentPage,
         limit: pageSize,
+        searchKeyword: searchValue,
       },
     });
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories(searchKeyword);
   }, [currentPage, pageSize]);
 
   const handlePageSizeChange = (size: number) => {
@@ -103,7 +106,7 @@ const Categories = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchCategories();
+          fetchCategories(searchKeyword);
         },
         command: ApiCommand.PUT,
         url: editCategoryUrl(selectedCategory.id as string),
@@ -129,7 +132,7 @@ const Categories = () => {
             status: "success",
           });
           setIsOpenModal(false);
-          fetchCategories();
+          fetchCategories(searchKeyword);
         },
         command: ApiCommand.POST,
         url: createCategoryUrl,
@@ -157,7 +160,7 @@ const Categories = () => {
           description: "Category deleted successfully",
           status: "success",
         });
-        fetchCategories();
+        fetchCategories(searchKeyword);
       },
       command: ApiCommand.DELETE,
       url: deleteCategoryUrl(categoryId),
@@ -167,6 +170,11 @@ const Categories = () => {
   const onEditCategory = (categoryId: string) => {
     setSelectedCategory(categories.find(({ id }) => id === categoryId));
     setIsOpenModal(true);
+  };
+
+  const onSearch = (value: string) => {
+    setSearchKeyword(value);
+    fetchCategories(value);
   };
 
   return (
@@ -179,10 +187,14 @@ const Categories = () => {
         flexWrap="wrap"
       >
         <Box flex="1" maxW="400px">
-          {/* <DulcineaInput
-            placeholder='Search'
-            rightIcon={<MdSearch color='gray.500' />}
-          /> */}
+          <Flex flexDirection="column">
+            <DulcineaInput
+              placeholder="Name and Description search..."
+              rightIcon={<MdSearch color="gray.500" />}
+              value={searchKeyword}
+              onChange={(e) => onSearch(e.target.value)}
+            />
+          </Flex>
         </Box>
         <Button
           colorScheme="teal"
