@@ -9,6 +9,7 @@ import DulcineaTable from "../../components/common/DulcineaTable";
 import DulcineaPagination from "../../components/common/DulcineaPagination";
 import useApi from "../../lib/hooks/useApi";
 import urlConstants from "../../lib/constants/url.constants";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 
 const {
   getUsers: getUsersUrl,
@@ -22,6 +23,8 @@ const Users = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<string>("");
 
   const showToast = useToastNotification();
 
@@ -127,7 +130,7 @@ const Users = () => {
     setCurrentPage(1);
   };
 
-  const handleDeleteUser = (id: string) => {
+  const handleDeleteUser = () => {
     deleteUser({
       callback: (data, error: string | null) => {
         if (error) {
@@ -143,10 +146,11 @@ const Users = () => {
           description: "User deleted successfully.",
           status: "success",
         });
+        setIsOpenDeleteModal(false);
         fetchUsers();
       },
       command: ApiCommand.DELETE,
-      url: deleteUserUrl(id),
+      url: deleteUserUrl(deleteId),
     });
   };
 
@@ -167,7 +171,10 @@ const Users = () => {
                   colorScheme="red"
                   size="sm"
                   disabled={row.role === "super_admin"}
-                  onClick={() => handleDeleteUser(row.id)}
+                  onClick={() => {
+                    setDeleteId(row.id);
+                    setIsOpenDeleteModal(true);
+                  }}
                 />
               </>
             )}
@@ -183,6 +190,11 @@ const Users = () => {
           onPageSizeChange={handlePageSizeChange}
         />
       </Flex>
+      <DeleteConfirmModal
+        isOpen={isOpenDeleteModal}
+        onClose={() => setIsOpenDeleteModal(false)}
+        onSubmit={handleDeleteUser}
+      />
     </Page>
   );
 };

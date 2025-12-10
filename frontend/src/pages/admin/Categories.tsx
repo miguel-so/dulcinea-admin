@@ -11,6 +11,7 @@ import EditCategoryModal from "../../components/categories/EditCategoryModal";
 import DulcineaTable from "../../components/common/DulcineaTable";
 import DulcineaPagination from "../../components/common/DulcineaPagination";
 import DulcineaInput from "../../components/common/DulcineaInput";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 
 const CATEGORY_COLUMNS = [
   {
@@ -41,6 +42,8 @@ const Categories = () => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>();
   const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<string>("");
 
   const showToast = useToastNotification();
 
@@ -144,7 +147,7 @@ const Categories = () => {
     }
   };
 
-  const onDeleteCategory = (categoryId: string) => {
+  const onDeleteCategory = () => {
     deleteCategory({
       callback: (_data, error: string | null) => {
         if (error) {
@@ -160,10 +163,11 @@ const Categories = () => {
           description: "Category deleted successfully",
           status: "success",
         });
+        setIsOpenDeleteModal(false);
         fetchCategories(searchKeyword);
       },
       command: ApiCommand.DELETE,
-      url: deleteCategoryUrl(categoryId),
+      url: deleteCategoryUrl(deleteId),
     });
   };
 
@@ -239,7 +243,10 @@ const Categories = () => {
                   variant="outline"
                   colorScheme="red"
                   size="sm"
-                  onClick={() => onDeleteCategory(row.id)}
+                  onClick={() => {
+                    setDeleteId(row.id);
+                    setIsOpenDeleteModal(true);
+                  }}
                 />
               </>
             )}
@@ -261,6 +268,11 @@ const Categories = () => {
         onClose={() => setIsOpenModal(false)}
         onSubmit={onSaveCategory}
         selectedCategory={selectedCategory}
+      />
+      <DeleteConfirmModal
+        isOpen={isOpenDeleteModal}
+        onClose={() => setIsOpenDeleteModal(false)}
+        onSubmit={onDeleteCategory}
       />
     </Page>
   );

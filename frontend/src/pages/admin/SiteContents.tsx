@@ -12,6 +12,7 @@ import DulcineaTable from "../../components/common/DulcineaTable";
 import DulcineaPagination from "../../components/common/DulcineaPagination";
 import EditSiteContentModal from "../../components/site-contents/EditSiteContentModal";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 
 const SITE_CONTENTS_COLUMNS = [
   {
@@ -41,6 +42,8 @@ const SiteContents = () => {
   const [pageSize, setPageSize] = useState<number>(5);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedSiteContent, setSelectedSiteContent] = useState<SiteContent>();
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<string>("");
 
   const showToast = useToastNotification();
 
@@ -143,7 +146,7 @@ const SiteContents = () => {
     }
   };
 
-  const onDeleteSiteContent = (siteContentId: string) => {
+  const onDeleteSiteContent = () => {
     deleteSiteContent({
       callback: (_data, error: string | null) => {
         if (error) {
@@ -159,10 +162,11 @@ const SiteContents = () => {
           description: "Site Content deleted successfully",
           status: "success",
         });
+        setIsOpenDeleteModal(false);
         fetchSiteContents();
       },
       command: ApiCommand.DELETE,
-      url: deleteSiteContentUrl(siteContentId),
+      url: deleteSiteContentUrl(deleteId),
     });
   };
 
@@ -246,7 +250,10 @@ const SiteContents = () => {
                   variant="outline"
                   colorScheme="red"
                   size="sm"
-                  onClick={() => onDeleteSiteContent(row.id)}
+                  onClick={() => {
+                    setDeleteId(row.id);
+                    setIsOpenDeleteModal(true);
+                  }}
                 />
               </>
             )}
@@ -268,6 +275,11 @@ const SiteContents = () => {
         onClose={() => setIsOpenModal(false)}
         onSubmit={onSaveSiteContent}
         selectedSiteContent={selectedSiteContent}
+      />
+      <DeleteConfirmModal
+        isOpen={isOpenDeleteModal}
+        onClose={() => setIsOpenDeleteModal(false)}
+        onSubmit={onDeleteSiteContent}
       />
     </Page>
   );

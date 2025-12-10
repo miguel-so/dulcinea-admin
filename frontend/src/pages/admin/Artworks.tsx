@@ -17,6 +17,7 @@ import { ArtworkStatus } from "../../lib/constants/artwork.constants";
 import { useAuth } from "../../lib/contexts/AuthContext";
 import DulcineaSelect from "../../components/common/DulcineaSelect";
 import { categoriesToSelectOptionsMapper } from "../../lib/utils";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 
 const {
   createArtwork: createArtworkUrl,
@@ -54,6 +55,8 @@ const Artworks = () => {
   const [searchSpotlight, setSearchSpotlight] = useState<"1" | "0" | null>(
     null
   );
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<string>("");
 
   const { user } = useAuth();
 
@@ -362,7 +365,7 @@ const Artworks = () => {
     }
   };
 
-  const onDeleteArtwork = (artworkId: string) => {
+  const onDeleteArtwork = () => {
     deleteArtwork({
       callback: (_data, error: string | null) => {
         if (error) {
@@ -378,6 +381,7 @@ const Artworks = () => {
           description: "Artwork deleted successfully",
           status: "success",
         });
+        setIsOpenDeleteModal(false);
         fetchArtworks(
           searchKeyword,
           searchStatus,
@@ -386,7 +390,7 @@ const Artworks = () => {
         );
       },
       command: ApiCommand.DELETE,
-      url: deleteArtworkUrl(artworkId),
+      url: deleteArtworkUrl(deleteId),
     });
   };
 
@@ -521,7 +525,10 @@ const Artworks = () => {
                   variant="outline"
                   colorScheme="red"
                   size="sm"
-                  onClick={() => onDeleteArtwork(row.id)}
+                  onClick={() => {
+                    setDeleteId(row.id);
+                    setIsOpenDeleteModal(true);
+                  }}
                 />
               </>
             )}
@@ -543,6 +550,11 @@ const Artworks = () => {
         onClose={() => setIsOpenModal(false)}
         onSubmit={onSaveArtwork}
         selectedArtwork={selectedArtwork}
+      />
+      <DeleteConfirmModal
+        isOpen={isOpenDeleteModal}
+        onClose={() => setIsOpenDeleteModal(false)}
+        onSubmit={onDeleteArtwork}
       />
     </Page>
   );
