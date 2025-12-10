@@ -12,6 +12,11 @@
   const instaElement = document.getElementById("artist-instagram");
   const galleryContainer = document.querySelector(".gallery01 .row");
 
+  const hidePageLoader = () => {
+    const loader = document.getElementById("page-loader");
+    if (loader) loader.style.display = "none";
+  };
+
   const loadArtistInfo = async () => {
     try {
       // Fetch site contents
@@ -84,6 +89,8 @@
       }
     } catch (err) {
       console.error("Failed loading artist info:", err);
+    } finally {
+      hidePageLoader();
     }
   };
 

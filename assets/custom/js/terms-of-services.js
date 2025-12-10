@@ -8,6 +8,11 @@
 
   const termsElement = document.getElementById("terms-of-services");
 
+  const hidePageLoader = () => {
+    const loader = document.getElementById("page-loader");
+    if (loader) loader.style.display = "none";
+  };
+
   const loadTermsOfServices = async () => {
     try {
       const siteContentsResponse = await fetchJson("/api/site-contents", {
@@ -28,6 +33,8 @@
       }
     } catch (err) {
       console.error("Failed loading Terms of Use:", err);
+    } finally {
+      hidePageLoader();
     }
   };
 

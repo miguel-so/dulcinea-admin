@@ -528,6 +528,11 @@
     }
   };
 
+  const hidePageLoader = () => {
+    const loader = document.getElementById("page-loader");
+    if (loader) loader.style.display = "none";
+  };
+
   const initialise = async () => {
     if (!artworkId) {
       setText(titleEl, "Artwork not found");
@@ -569,6 +574,8 @@
         descriptionEl,
         "An error occurred while loading this artwork. Please try again later."
       );
+    } finally {
+      hidePageLoader();
     }
   };
 

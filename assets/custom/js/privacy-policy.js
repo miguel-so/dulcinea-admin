@@ -9,6 +9,11 @@
   // DOM element that will receive the privacy policy
   const policyElement = document.getElementById("privacy-policy-content");
 
+  const hidePageLoader = () => {
+    const loader = document.getElementById("page-loader");
+    if (loader) loader.style.display = "none";
+  };
+
   const loadPrivacyPolicy = async () => {
     try {
       const siteContentsResponse = await fetchJson("/api/site-contents", {
@@ -29,6 +34,8 @@
       }
     } catch (err) {
       console.error("Failed loading privacy policy:", err);
+    } finally {
+      hidePageLoader();
     }
   };
 

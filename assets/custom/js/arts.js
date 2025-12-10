@@ -240,6 +240,11 @@
     }
   };
 
+  const hidePageLoader = () => {
+    const loader = document.getElementById("page-loader");
+    if (loader) loader.style.display = "none";
+  };
+
   const initialise = async () => {
     try {
       const [categoryResponse, artworksResponse] = await Promise.all([
@@ -261,6 +266,8 @@
     } catch (error) {
       console.error("Failed to load category artworks", error);
       hydrateCategoryHeader(null);
+    } finally {
+      hidePageLoader();
     }
   };
 

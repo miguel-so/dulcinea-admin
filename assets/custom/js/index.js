@@ -344,6 +344,11 @@
     toggleSectionState(spotlightRow.closest("section"), false);
   };
 
+  const hidePageLoader = () => {
+    const loader = document.getElementById("page-loader");
+    if (loader) loader.style.display = "none";
+  };
+
   const initialiseLandingPage = async () => {
     try {
       const [
@@ -397,6 +402,8 @@
         true,
         "Unable to load spotlight artworks."
       );
+    } finally {
+      hidePageLoader();
     }
   };
 
