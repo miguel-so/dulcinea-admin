@@ -2,7 +2,9 @@
   const { fetchJson, parseQuery } = window.DulcineaUtils || {};
 
   if (!fetchJson || !parseQuery) {
-    console.error("Dulcinea utilities are missing. Aborting contact form init.");
+    console.error(
+      "Dulcinea utilities are missing. Aborting contact form init."
+    );
     return;
   }
 
@@ -16,6 +18,15 @@
   const submitButton = form.querySelector("[data-submit-button]");
   const successAlert = form.querySelector("[data-success-alert]");
   const errorAlert = form.querySelector("[data-error-alert]");
+
+  // ---- NEW anti-spam fields ----
+  const honeypot = form.querySelector("#hp_check");
+  const tStart = form.querySelector("#t_start");
+  const tokenEl = form.querySelector("#token");
+
+  // Set timestamp + random token
+  tStart.value = Date.now().toString();
+  tokenEl.value = crypto.randomUUID();
 
   const query = parseQuery();
   const artworkId = query.artworkId || query.id || null;
@@ -61,6 +72,19 @@
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     hideAlerts();
+
+    // ---- Anti-spam checks BEFORE sending ----
+    if (honeypot.value) {
+      console.warn("Spam bot detected (honeypot filled)");
+      return;
+    }
+
+    const elapsed = Date.now() - Number(tStart.value);
+    if (elapsed < 2500) {
+      console.warn("Spam bot detected (submitted too fast)");
+      return;
+    }
+
     if (!canSubmit()) return;
 
     setSubmitting(true);
@@ -101,5 +125,3 @@
   // Initialise button state
   toggleSubmitState();
 })();
-
-
