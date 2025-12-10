@@ -11,7 +11,7 @@ type SendRequestParams<T> = {
     error: string | null,
     statusCode: string | number | null
   ) => void;
-  command: 'get' | 'post' | 'put' | 'delete';
+  command: "get" | "post" | "put" | "delete";
   options?: Record<string, any>;
   url: string;
 };
@@ -29,8 +29,8 @@ type Pagination = {
 type SelectOption = {
   value: string;
   label: string;
-}
-declare module 'react-image-zoom' {
+};
+declare module "react-image-zoom" {
   const ReactImageZoom: any;
   export default ReactImageZoom;
 }
