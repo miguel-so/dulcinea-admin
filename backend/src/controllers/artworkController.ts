@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import jwt from "jsonwebtoken";
 
 import { Request, Response } from "express";
 import { Artwork, Category, User } from "../models";
@@ -34,8 +35,31 @@ export const getArtworks = async (req: Request, res: Response) => {
   const isNotSpotlight = req.query.isSpotlight === "false";
 
   try {
+    let token: string | undefined;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    let user: User | null = null;
+
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+        id: number;
+      };
+      user = await User.findByPk(decoded.id, {
+        attributes: { exclude: ["password"] },
+      });
+    }
     // Build filters (same as before)
     let whereClause: any = {};
+
+    if (user && user.role !== "super_admin") {
+      whereClause.artistId = user.id;
+    }
 
     if (req.query.searchKeyword) {
       whereClause[Op.or] = [

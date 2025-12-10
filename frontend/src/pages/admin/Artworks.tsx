@@ -124,12 +124,15 @@ const Artworks = () => {
       render: (value: any, row: any) => {
         const userRole = user?.role; // or however you store role
         const isSuperAdmin = userRole === "super_admin";
+        const isArtistBioCat =
+          categories.find((cat) => cat.id == row.categoryId)?.name ===
+          "Artist-Bio-Pics";
 
         return (
           <Switch
             colorScheme="teal"
             isChecked={value == 1}
-            isDisabled={!isSuperAdmin} // 🔥 disable switch for non-super-admin
+            isDisabled={!isSuperAdmin || isArtistBioCat}
             onChange={() => {
               if (isSuperAdmin) {
                 // 🔥 prevent execution

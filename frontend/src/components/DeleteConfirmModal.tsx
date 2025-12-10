@@ -22,8 +22,8 @@ const DeleteConfirmModal = ({
       body={
         <VStack spacing={4} py={2}>
           <Text textAlign="center">
-            This action cannot be undone. Are you sure you want to delete this
-            item?
+            The Delete action cannot be undone. All associated data will be
+            permanently deleted. Are you sure about this Action?
           </Text>
         </VStack>
       }
