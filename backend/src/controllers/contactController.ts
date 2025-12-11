@@ -54,7 +54,7 @@ You have received a new inquiry about your artwork${
 
 Inventory Number: ${artworkInventoryNumber}
 Artwork: ${
-      process.env.REACT_APP_API_URL
+      process.env.FRONTEND_URL
     }/details.html?id=${artworkId}&category=${artworkCategoryId}
 
 From: ${name} (${email})
