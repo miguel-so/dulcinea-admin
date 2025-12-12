@@ -54,7 +54,7 @@ You have received a new inquiry about your artwork${
 
 Inventory Number: ${artworkInventoryNumber}
 Artwork: ${
-      process.env.FRONTEND_URL
+      process.env.LANDING_PAGE_URL
     }/details.html?id=${artworkId}&category=${artworkCategoryId}
 
 From: ${name} (${email})
@@ -82,6 +82,10 @@ Thank you for your interest in the artwork${
 Your message has been sent to the artist, and they will respond directly to you at ${email} or via phone at ${
       phone || "Not provided"
     }.
+
+Artwork: ${
+      process.env.LANDING_PAGE_URL
+    }/details.html?id=${artworkId}&category=${artworkCategoryId}
 
 Your message:
 ${message}
