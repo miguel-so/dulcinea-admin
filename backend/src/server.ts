@@ -23,6 +23,9 @@ dotenv.config();
 
 const app = express();
 
+// Required when running behind Nginx reverse proxy
+app.set("trust proxy", 1);
+
 app.use(cors({ origin: "*" }));
 // OR, if using credentials (cookies, auth headers):
 // app.use(cors({ origin: true, credentials: true }));
