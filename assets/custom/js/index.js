@@ -375,13 +375,21 @@
       const categories = categoriesResponse?.categories || [];
       const siteContents = siteContentsResponse?.siteContents || [];
       const spotlightArtworks = spotlightArtworksResponse?.artworks || [];
-      console.log("artworks", artworks);
 
       renderHero(artworks);
       renderCategories(
         categories.filter((category) => category.name !== "Artist-Bio-Pics")
       );
-      renderSpotlight(spotlightArtworks.filter((art) => art.status !== "Sold"));
+      renderSpotlight(
+        spotlightArtworks.filter((art) => {
+          const artistBioPicCategoryId = categories.find(
+            (cat) => cat.name === "Artist-Bio-Pics"
+          )?.id;
+          return (
+            art.status !== "Sold" && art.categoryId != artistBioPicCategoryId
+          );
+        })
+      );
       renderWelcomeMessage(siteContents);
     } catch (error) {
       console.error("Failed to initialise landing page", error);

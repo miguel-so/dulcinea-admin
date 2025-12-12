@@ -38,7 +38,7 @@ export const getAllCategories = async (req: Request, res: Response) => {
     const categoriesWithThumbs = await Promise.all(
       categories.map(async (cat) => {
         const art = await Artwork.findOne({
-          where: { categoryId: cat.id },
+          where: { categoryId: cat.id, status: { [Op.ne]: "Sold" } },
           order: [Sequelize.literal("RAND()")], // random artwork
         });
 

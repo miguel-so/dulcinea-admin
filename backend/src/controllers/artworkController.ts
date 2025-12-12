@@ -103,6 +103,8 @@ export const getArtworks = async (req: Request, res: Response) => {
     }
 
     if (isRandom) {
+      // ALWAYS exclude sold artworks in random mode
+      whereClause.status = { [Op.ne]: ArtworkStatus.SOLD };
       // Step 1: Fetch artworks normally
       const artworks = await Artwork.findAll({
         where: whereClause,
